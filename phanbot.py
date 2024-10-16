@@ -16,6 +16,7 @@ TOKEN = config['phanbot-token']
 TARGET_USER_ID = int(config['phantom-id'])  # Replace with the user's Discord ID
 TARGET_CHANNEL_ID = int(config['help-pls-id'])
 #TARGET_CHANNEL_ID = 784423146728063000 #skj
+TRUSTED_USER = int(config['trusted-user-id'])
 
 # Set up the bot
 intents = discord.Intents.default()
@@ -29,6 +30,11 @@ async def on_ready():
 
 @client.event
 async def on_message(message):
+    if isinstance(message.channel, discord.DMChannel) and message.author.id == TRUSTED_USER:
+        if message.content.lower() == "reboot":
+            await message.channel.send("Rebooting the system as requested...")
+            os.system("sudo /sbin/reboot")
+
     if message.author.id == TARGET_USER_ID:
         # React with an emoji (e.g., thumbs up)
         emoji = '<:blahaj:1173983591785578547>'  # Replace with any emoji you want
