@@ -7,6 +7,7 @@ from json import load
 with open('config.json', 'r') as cfg:
   # Deserialize the JSON data (essentially turning it into a Python dictionary object so we can use it in our code) 
   config = load(cfg) 
+os.system("git pull")
 
 # Replace 'your_bot_token_here' with your bot token
 TOKEN = config['phanbot-token']
