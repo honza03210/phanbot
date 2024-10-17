@@ -32,7 +32,7 @@ async def on_ready():
 async def on_message(message):
     if isinstance(message.channel, discord.DMChannel) and message.author.id == TRUSTED_USER:
         if message.content.lower() == "reboot":
-            await message.channel.send("Rebooting the system as requested...")
+            await message.channel.send("Rebooting...")
             os.system("sudo /sbin/reboot")
 
     if message.author.id == TARGET_USER_ID:
