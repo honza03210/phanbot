@@ -4,6 +4,7 @@ from discord.ext import commands
 from datetime import datetime, timezone
 from json import load
 
+
 with open('config.json', 'r') as cfg:
   # Deserialize the JSON data (essentially turning it into a Python dictionary object so we can use it in our code) 
   config = load(cfg) 
