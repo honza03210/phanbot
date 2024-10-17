@@ -46,7 +46,7 @@ async def on_message(message):
             # Find the last message by the target user (excluding the current one)
             last_message = None
             for msg in history:
-                if msg.author.id == TARGET_USER_ID and msg.id != message.id:
+                if msg.author.id == TARGET_USER_ID and msg.id != message.id and '?' in msg.content:
                     last_message = msg
                     break
             
@@ -56,9 +56,9 @@ async def on_message(message):
                 time_difference = now - last_message.created_at
                 
                 # Send a message with the time difference
-                if time_difference.total_seconds() // 3600 > -1:
+                if time_difference.total_seconds() // 3600 > 12:
                     await message.channel.send(
-                        f"cg, {message.author.mention}! Naposledy ses tady ozval pred vice jak {time_difference.total_seconds() // 3600} hodinami :D"
+                        f"cg, {message.author.mention}! Naposledy ses tady ozval pred vic jak {time_difference.total_seconds() // 60} minutama :D"
                     )
         
 while True:
