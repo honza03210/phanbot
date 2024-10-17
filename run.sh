@@ -1,4 +1,8 @@
-nohup git pull &
-nohup python3 bot.py &
-nohup python3 phanbot.py &
+#!/bin/bash
+
+cd /PATH_TO_WORKING_DIR -- TODO
+
+git pull origin master&
+python3 bot.py &
+python3 phanbot.py &
 
