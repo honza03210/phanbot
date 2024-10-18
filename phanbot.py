@@ -29,6 +29,8 @@ client = commands.Bot(command_prefix="!", intents=intents)
 @client.event
 async def on_ready():
     print(f'Logged in as {client.user.name}')
+    user = client.get_user(int(TRUSTED_USER))
+    await user.send("Rebooted")
 
 @client.event
 async def on_message(message):
