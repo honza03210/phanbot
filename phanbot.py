@@ -63,6 +63,17 @@ async def on_message(message):
                     await message.channel.send(
                         f"cg, {message.author.mention}! Naposledy ses tady ozval pred vic jak {time_difference.total_seconds() // 60} minutama :D"
                     )
+
+@client.event
+async def on_reaction_add(reaction, user):
+    if user.bot:
+        return  # Ignore bot reactions
+
+    channel_id = reaction.message.channel
+    emoji = str(reaction.emoji)
+
+    await reaction.message.add_reaction(emoji)
+
         
 while True:
 	client.run(TOKEN)
