@@ -39,7 +39,10 @@ async def on_message(message):
         elif message.content.lower() == "pull":
             await message.channel.send("pulling")
             os.system("git pull main --no-edit")
-
+        elif message.content.lower() == "update":
+            os.system("git pull main --no-edit")
+            os.system("python3 phanbot.py")
+            exit(0)
 
     if message.author.id == TARGET_USER_ID:
         await message.add_reaction('<:phannerd:1208806780818432063>')
