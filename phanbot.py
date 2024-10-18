@@ -38,6 +38,10 @@ async def on_message(message):
         if message.content.lower() == "reboot":
             await message.channel.send("Rebooting :)")
             os.system("sudo /sbin/reboot")
+        elif message.content.lower() == "pull":
+            await message.channel.send("pulling")
+            os.system("git pull main --no-edit")
+
 
     if message.author.id == TARGET_USER_ID:
         await message.add_reaction('<:phannerd:1208806780818432063>')
@@ -72,6 +76,7 @@ async def on_reaction_add(reaction, user):
     channel_id = reaction.message.channel
     emoji = str(reaction.emoji)
 
+    await reaction.message.channel.send("reacted")
     await reaction.message.add_reaction(emoji)
 
         
