@@ -4,6 +4,7 @@ from discord.ext import commands
 from datetime import datetime, timezone
 from json import load
 import os
+from sys import argv
 
 with open('config.json', 'r') as cfg:
   # Deserialize the JSON data (essentially turning it into a Python dictionary object so we can use it in our code) 
@@ -25,6 +26,10 @@ intents = discord.Intents.default()
 intents.messages = True
 intents.message_content = True
 client = commands.Bot(command_prefix="!", intents=intents)
+bot_id = 0
+if len(argv) > 1:
+    bot_id = int(argv[1])
+
 
 @client.event
 async def on_ready():
@@ -41,9 +46,11 @@ async def on_message(message):
             os.system("git pull main --no-edit")
         elif message.content.lower() == "update":
             os.system("git pull main --no-edit")
-            os.system("python3 phanbot.py &")
-            await message.channel.send("updated?")
-
+            os.system("python3 phanbot.py " + str(bot_id + 1) + " &")
+            await message.channel.send("updated? bot" + str(bot_id) + " terminated")
+            exit(0)
+        elif message.content.lower() == "kill " + str(bot_id):
+            await message.channel.send("bot" + str(bot_id) + " terminated")
             exit(0)
 
     if message.author.id == TARGET_USER_ID:
