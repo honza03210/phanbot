@@ -37,9 +37,8 @@ async def on_message(message):
             os.system("sudo /sbin/reboot")
 
     if message.author.id == TARGET_USER_ID:
-        # React with an emoji (e.g., thumbs up)
-        emoji = '<:blahaj:1173983591785578547>'  # Replace with any emoji you want
-        await message.add_reaction(emoji)
+        await message.add_reaction('<:phannerd:1208806780818432063>')
+        await message.add_reaction('<:blahaj:1173983591785578547>')
         print(message.content)
         if '?' in str(message.content) and message.channel.id == TARGET_CHANNEL_ID:
             history = [msg async for msg in message.channel.history(limit=200)]
