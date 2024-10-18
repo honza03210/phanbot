@@ -41,7 +41,7 @@ async def on_message(message):
             os.system("git pull main --no-edit")
         elif message.content.lower() == "update":
             os.system("git pull main --no-edit")
-            os.system("python3 phanbot.py")
+            os.system("python3 phanbot.py &")
             await message.channel.send("updated")
 
             exit(0)
