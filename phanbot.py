@@ -35,8 +35,8 @@ if len(argv) > 1:
 @client.event
 async def on_ready():
     print(f'Logged in as {client.user.name}')
-    channel = client.get_channel(TRUSTED_CHANNEL)
-    await channel.send("PhanBot se hlasi do sluzby :)")
+    cc = await client.get_channel(TRUSTED_CHANNEL)
+    await cc.send("PhanBot se hlasi do sluzby :)")
 
 @client.event
 async def on_message(message):
