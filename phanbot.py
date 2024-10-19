@@ -56,7 +56,7 @@ async def on_message(message):
             elif message.content.lower() == "ping":
                 await message.channel.send("bot " + str(bot_id) + " says hi! :D")
                 await message.channel.send("we are on channel: " + str(message.channel.id))
-                cc = client.get_channel(int(TRUSTED_CHANNEL))
+                await cc = client.get_channel(TRUSTED_CHANNEL)
                 await message.channel.send(str(type(cc)))
                 await message.channel.send(str(TRUSTED_CHANNEL))
 
