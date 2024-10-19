@@ -47,11 +47,14 @@ async def on_message(message):
         elif message.content.lower() == "update":
             os.system("git pull main --no-edit")
             os.system("python3 phanbot.py " + str(bot_id + 1) + " &")
-            await message.channel.send("updated? bot" + str(bot_id) + " terminated")
+            await message.channel.send("updated? bot " + str(bot_id) + " terminated")
             exit(0)
-        elif message.content.lower() == "kill " + str(bot_id):
-            await message.channel.send("bot" + str(bot_id) + " terminated")
-            exit(0)
+        elif message.content.lower() == "ping":
+            await message.channel.send("bot " + str(bot_id) + " says hi! :D")
+            await message.channel.send("we are on channel: " + message.channel.id)
+        elif message.content.lower() == "help":
+            await message.channel.send("reboot\npull\nupdate\nping\n")
+
 
     if message.author.id == TARGET_USER_ID:
         await message.add_reaction('<:phannerd:1208806780818432063>')
@@ -75,7 +78,7 @@ async def on_message(message):
                 # Send a message with the time difference
                 if time_difference.total_seconds() // 3600 > 12:
                     await message.channel.send(
-                        f"cg, {message.author.mention}! Naposledy ses tady ozval pred vic jak {time_difference.total_seconds() // 60} minutama :D"
+                        f"cg, {message.author.mention}! Naposledy ses tady zeptat pred vic jak {time_difference.total_seconds() // 60} minutama :D"
                     )
 
 @client.event
