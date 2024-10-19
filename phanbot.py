@@ -1,6 +1,6 @@
 import discord
 from time import sleep
-from discord.ext import commands
+from discord.ext import commands, tasks
 from datetime import datetime, timezone
 from json import load
 import os
@@ -32,6 +32,10 @@ bot_id = 0
 if len(argv) > 1:
     bot_id = int(argv[1])
 
+@tasks.loop(seconds=1.0, count=1)
+async def greeting():
+    cc = client.get_channel(TRUSTED_CHANNEL)
+    await cc.send("Hiii!")
 
 @client.event
 async def on_ready():
@@ -57,8 +61,7 @@ async def on_message(message):
             elif message.content.lower() == "ping":
                 await message.channel.send("bot " + str(bot_id) + " says hi! :D")
                 await message.channel.send("we are on channel: " + str(message.channel.id))
-                cc = client.get_channel(TRUSTED_CHANNEL)
-                await message.channel.send(str(type(cc)))
+                
                 await message.channel.send(str(TRUSTED_CHANNEL))
 
             elif message.content.lower() == "help":
@@ -100,6 +103,11 @@ async def on_reaction_add(reaction, user):
 
     await reaction.message.channel.send("reacted")
     await reaction.message.add_reaction(emoji)
+
+
+class MyClient(discord.Client):
+    async def setup_hook(self):
+        greeting.start()
 
         
 while True:
