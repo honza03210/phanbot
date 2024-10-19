@@ -26,6 +26,7 @@ TRUSTED_CHANNEL = int(config['trusted-user-channel'])
 intents = discord.Intents.default()
 intents.messages = True
 intents.message_content = True
+intents.dm_messages = True
 client = commands.Bot(command_prefix="!", intents=intents)
 bot_id = 0
 if len(argv) > 1:
@@ -35,7 +36,7 @@ if len(argv) > 1:
 @client.event
 async def on_ready():
     print(f'Logged in as {client.user.name}')
-    cc = await client.get_channel(TRUSTED_CHANNEL)
+    cc = client.get_channel(TRUSTED_CHANNEL)
     await cc.send("PhanBot se hlasi do sluzby :)")
 
 @client.event
@@ -56,7 +57,7 @@ async def on_message(message):
             elif message.content.lower() == "ping":
                 await message.channel.send("bot " + str(bot_id) + " says hi! :D")
                 await message.channel.send("we are on channel: " + str(message.channel.id))
-                cc = await client.get_channel(TRUSTED_CHANNEL)
+                cc = client.get_channel(TRUSTED_CHANNEL)
                 await message.channel.send(str(type(cc)))
                 await message.channel.send(str(TRUSTED_CHANNEL))
 
