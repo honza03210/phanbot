@@ -40,8 +40,6 @@ async def greeting():
 @client.event
 async def on_ready():
     print(f'Logged in as {client.user.name}')
-    cc = client.get_channel(TRUSTED_CHANNEL)
-    await cc.send("PhanBot se hlasi do sluzby :)")
 
 @client.event
 async def on_message(message):
