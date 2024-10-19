@@ -18,7 +18,7 @@ TOKEN = config['phanbot-token']
 #TARGET_USER_ID = 536453025028374529 #ja
 TARGET_USER_ID = int(config['phantom-id'])  # Replace with the user's Discord ID
 TARGET_CHANNEL_ID = int(config['help-pls-id'])
-#TARGET_CHANNEL_ID = 784423146728063000 #skj
+#TARGET_CHANNEL_ID = 784423146728063000 #skjiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiii
 TRUSTED_USER = int(config['trusted-user-id'])
 TRUSTED_CHANNEL = int(config['trusted-user-channel'])
 
@@ -56,6 +56,7 @@ async def on_message(message):
             elif message.content.lower() == "ping":
                 await message.channel.send("bot " + str(bot_id) + " says hi! :D")
                 await message.channel.send("we are on channel: " + str(message.channel.id))
+                await message.channel.send(str(TRUSTED_CHANNEL))
 
             elif message.content.lower() == "help":
                 await message.channel.send("reboot\npull\nupdate\nping\n")
