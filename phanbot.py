@@ -20,6 +20,7 @@ TARGET_USER_ID = int(config['phantom-id'])  # Replace with the user's Discord ID
 TARGET_CHANNEL_ID = int(config['help-pls-id'])
 #TARGET_CHANNEL_ID = 784423146728063000 #skj
 TRUSTED_USER = int(config['trusted-user-id'])
+TRUSTED_CHANNEL = int(config['trusted-user-channel'])
 
 # Set up the bot
 intents = discord.Intents.default()
@@ -34,27 +35,30 @@ if len(argv) > 1:
 @client.event
 async def on_ready():
     print(f'Logged in as {client.user.name}')
+    channel = client.get_channel(TRUSTED_CHANNEL)
+    await channel.send("PhanBot se hlasi do sluzby :)")
 
 @client.event
 async def on_message(message):
-    if isinstance(message.channel, discord.DMChannel) and message.author.id == TRUSTED_USER:
-        if message.content.lower() == "reboot":
-            await message.channel.send("Rebooting :)")
-            os.system("sudo /sbin/reboot")
-        elif message.content.lower() == "pull":
-            await message.channel.send("pulling")
-            os.system("git pull main --no-edit")
-        elif message.content.lower() == "update":
-            os.system("git pull main --no-edit")
-            os.system("python3 phanbot.py " + str(bot_id + 1) + " &")
-            await message.channel.send("updated? bot " + str(bot_id) + " terminated")
-            exit(0)
-        elif message.content.lower() == "ping":
-            await message.channel.send("bot " + str(bot_id) + " says hi! :D")
-            await message.channel.send("we are on channel: " + str(message.channel.id))
+    if isinstance(message.channel, discord.DMChannel):
+        if message.author.id == TRUSTED_USER:
+            if message.content.lower() == "reboot":
+                await message.channel.send("Rebooting :)")
+                os.system("sudo /sbin/reboot")
+            elif message.content.lower() == "pull":
+                await message.channel.send("pulling")
+                os.system("git pull main --no-edit")
+            elif message.content.lower() == "update":
+                os.system("git pull main --no-edit")
+                os.system("python3 phanbot.py " + str(bot_id + 1) + " &")
+                await message.channel.send("updated? bot " + str(bot_id) + " terminated")
+                exit(0)
+            elif message.content.lower() == "ping":
+                await message.channel.send("bot " + str(bot_id) + " says hi! :D")
+                await message.channel.send("we are on channel: " + str(message.channel.id))
 
-        elif message.content.lower() == "help":
-            await message.channel.send("reboot\npull\nupdate\nping\n")
+            elif message.content.lower() == "help":
+                await message.channel.send("reboot\npull\nupdate\nping\n")
 
 
     if message.author.id == TARGET_USER_ID:
