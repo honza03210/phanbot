@@ -51,7 +51,8 @@ async def on_message(message):
             exit(0)
         elif message.content.lower() == "ping":
             await message.channel.send("bot " + str(bot_id) + " says hi! :D")
-            await message.channel.send("we are on channel: " + message.channel.id)
+            await message.channel.send("we are on channel: " + str(message.channel.id))
+
         elif message.content.lower() == "help":
             await message.channel.send("reboot\npull\nupdate\nping\n")
 
