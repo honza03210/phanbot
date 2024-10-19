@@ -1,5 +1,5 @@
 import discord
-from time import sleep
+from time import sleep, time
 from discord.ext import commands, tasks
 from datetime import datetime, timezone
 from json import load
@@ -38,7 +38,7 @@ async def on_ready():
         # Send a greeting message to the trusted channel when the bot starts
     trusted_channel = await client.fetch_channel(TRUSTED_CHANNEL)
     if trusted_channel:
-        await trusted_channel.send(f"Hello! Bot {bot_id} is now online and ready to go! :wave:")
+        await trusted_channel.send(f"Nazdar! PhanBot ready {time.time()}")
 
     
 
