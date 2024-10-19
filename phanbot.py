@@ -38,7 +38,7 @@ async def on_ready():
         # Send a greeting message to the trusted channel when the bot starts
     trusted_channel = await client.fetch_channel(TRUSTED_CHANNEL)
     if trusted_channel:
-        await trusted_channel.send(f"Nazdar! PhanBot ready {time.time()}")
+        await trusted_channel.send(f"Nazdar! PhanBot ready {datetime.now().strftime('%d/%m/%Y, %H:%M:%S')}")
 
     
 
