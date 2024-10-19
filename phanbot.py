@@ -36,7 +36,7 @@ if len(argv) > 1:
 async def on_ready():
     print(f'Logged in as {client.user.name}')
         # Send a greeting message to the trusted channel when the bot starts
-    trusted_channel = client.get_channel(TRUSTED_CHANNEL)
+    trusted_channel = await client.fetch_channel(TRUSTED_CHANNEL)
     if trusted_channel:
         await trusted_channel.send(f"Hello! Bot {bot_id} is now online and ready to go! :wave:")
 
