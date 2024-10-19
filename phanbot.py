@@ -32,14 +32,15 @@ bot_id = 0
 if len(argv) > 1:
     bot_id = int(argv[1])
 
-@tasks.loop(seconds=1.0, count=1)
-async def greeting():
-    cc = client.get_channel(TRUSTED_CHANNEL)
-    await cc.send("Hiii!")
-
 @client.event
 async def on_ready():
     print(f'Logged in as {client.user.name}')
+        # Send a greeting message to the trusted channel when the bot starts
+    trusted_channel = client.get_channel(TRUSTED_CHANNEL)
+    if trusted_channel:
+        await trusted_channel.send(f"Hello! Bot {bot_id} is now online and ready to go! :wave:")
+
+    
 
 @client.event
 async def on_message(message):
@@ -102,12 +103,7 @@ async def on_reaction_add(reaction, user):
     await reaction.message.channel.send("reacted")
     await reaction.message.add_reaction(emoji)
 
-
-class MyClient(discord.Client):
-    async def setup_hook(self):
-        greeting.start()
-
-        
+ 
 while True:
 	client.run(TOKEN)
 	sleep(30)
