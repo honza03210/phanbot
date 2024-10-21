@@ -33,7 +33,7 @@ if len(argv) > 1:
     bot_id = int(argv[1])
 
 @client.event
-async def on_ready():
+async def on_connect():
     print(f'Logged in as {client.user.name}')
         # Send a greeting message to the trusted channel when the bot starts
     trusted_channel = await client.fetch_channel(TRUSTED_CHANNEL)
@@ -41,6 +41,8 @@ async def on_ready():
         await trusted_channel.send(f"Nazdar! PhanBot ready {datetime.now().strftime('%d/%m/%Y, %H:%M:%S')}")
 
     
+@client.event
+async def on_reaction()
 
 @client.event
 async def on_message(message):
