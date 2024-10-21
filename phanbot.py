@@ -33,7 +33,7 @@ if len(argv) > 1:
     bot_id = int(argv[1])
 
 @client.event
-async def on_connect():
+async def on_ready():
     print(f'Logged in as {client.user.name}')
         # Send a greeting message to the trusted channel when the bot starts
     trusted_channel = await client.fetch_channel(TRUSTED_CHANNEL)
