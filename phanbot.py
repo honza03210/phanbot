@@ -51,6 +51,7 @@ async def on_reaction(reaction, user):
 async def on_message(message):
     if isinstance(message.channel, discord.DMChannel):
         if message.author.bot and message.channel.id == TRUSTED_CHANNEL:
+            global to_terminate
             if to_terminate:
                 await message.channel.send("Bot " + str(bot_id) + " terminated")
                 exit(0)
