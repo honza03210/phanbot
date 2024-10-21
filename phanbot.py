@@ -44,12 +44,16 @@ async def on_ready():
 
 
 @client.event
-async def on_reaction():
+async def on_reaction(reaction, user):
     pass
 
 @client.event
 async def on_message(message):
     if isinstance(message.channel, discord.DMChannel):
+        if message.author.bot and message.channel.id == TRUSTED_CHANNEL:
+            if to_terminate:
+                await message.channel.send("Bot " + str(bot_id) + " terminated")
+                exit(0)
         if message.author.id == TRUSTED_USER:
             if message.content.lower() == "reboot":
                 await message.channel.send("Rebooting :)")
@@ -61,13 +65,11 @@ async def on_message(message):
                 to_terminate = True
                 os.system("git pull main --no-edit")
                 os.system("python3 phanbot.py " + str(bot_id + 1) + " &")
-                await message.channel.send("updated? bot " + str(bot_id) + " terminated")
+                await message.channel.send("updated?")
             elif message.content.lower() == "ping":
                 await message.channel.send("bot " + str(bot_id) + " says hi! :D")
                 await message.channel.send("we are on channel: " + str(message.channel.id))
-                
                 await message.channel.send(str(TRUSTED_CHANNEL))
-
             elif message.content.lower() == "help":
                 await message.channel.send("reboot\npull\nupdate\nping\n")
 
