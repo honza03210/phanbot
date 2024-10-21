@@ -66,7 +66,6 @@ async def on_message(message):
                 to_terminate = True
                 os.system("git pull main --no-edit")
                 os.system("python3 phanbot.py " + str(bot_id + 1) + " &")
-                await message.channel.send("updated?")
             elif message.content.lower() == "ping":
                 await message.channel.send("bot " + str(bot_id) + " says hi! :D")
                 await message.channel.send("we are on channel: " + str(message.channel.id))
