@@ -29,6 +29,8 @@ intents.message_content = True
 intents.dm_messages = True
 client = commands.Bot(command_prefix="!", intents=intents)
 bot_id = 0
+to_terminate = False
+
 if len(argv) > 1:
     bot_id = int(argv[1])
 
@@ -40,9 +42,10 @@ async def on_ready():
     if trusted_channel:
         await trusted_channel.send(f"Nazdar! PhanBot ready {datetime.now().strftime('%d/%m/%Y, %H:%M:%S')}")
 
-    
+
 @client.event
-async def on_reaction()
+async def on_reaction():
+    pass
 
 @client.event
 async def on_message(message):
@@ -55,10 +58,10 @@ async def on_message(message):
                 await message.channel.send("pulling")
                 os.system("git pull main --no-edit")
             elif message.content.lower() == "update":
+                to_terminate = True
                 os.system("git pull main --no-edit")
                 os.system("python3 phanbot.py " + str(bot_id + 1) + " &")
                 await message.channel.send("updated? bot " + str(bot_id) + " terminated")
-                exit(0)
             elif message.content.lower() == "ping":
                 await message.channel.send("bot " + str(bot_id) + " says hi! :D")
                 await message.channel.send("we are on channel: " + str(message.channel.id))
