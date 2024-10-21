@@ -49,6 +49,7 @@ async def on_reaction(reaction, user):
 
 @client.event
 async def on_message(message):
+    global bot_id
     if isinstance(message.channel, discord.DMChannel):
         if message.author.bot and message.channel.id == TRUSTED_CHANNEL:
             global to_terminate
