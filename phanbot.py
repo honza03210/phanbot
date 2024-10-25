@@ -106,7 +106,7 @@ async def print_leaderboard(channel):
     for user in reactions_data:
         tuples.append((user, reactions_data[user]['total']))
     tuples.sort()
-    mesg = "----PhanBoard----"
+    mesg = "----PhanBoard----\n"
     for i, (user, total) in enumerate(tuples):
         usr = await client.fetch_user(user)
         mesg += f"{i + 1}. {usr.display_name} -> {total}\n"
