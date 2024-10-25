@@ -90,8 +90,11 @@ async def on_raw_reaction_add(payload):
 
 @client.event
 async def on_raw_reaction_remove(payload):
+    print(payload.channel_id)
     channel = await client.fetch_channel(payload.channel_id)
+    print(payload.message_id)
     msg = await channel.fetch_message(payload.message_id)
+    print(msg.author.id)
     if msg.author.id != TARGET_USER_ID:
         return
     user = await client.fetch_user(payload.user_id)
