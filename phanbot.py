@@ -78,6 +78,8 @@ async def on_reaction_add(reaction, user):
 
 @client.event
 async def on_raw_reaction_add(payload):
+    if payload.author.id != TARGET_USER_ID:
+        return
     user = await client.fetch_user(payload.user_id)
     if user.bot:
         return
@@ -88,6 +90,10 @@ async def on_raw_reaction_add(payload):
 
 @client.event
 async def on_raw_reaction_remove(payload):
+    channel = await client.fetch_channel(payload.channel_id)
+    msg = await channel.fetch_message(payload.message_id)
+    if msg.author.id != TARGET_USER_ID:
+        return
     user = await client.fetch_user(payload.user_id)
     if user.bot:
         return
