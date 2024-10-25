@@ -97,7 +97,7 @@ async def on_raw_reaction_add(payload):
     while num > 0:
         if num % 10 == 0:
             if first:
-                user.send(f"Ooooo, cg {num} reakci si zaslouzi odmenu :D")
+                await user.send(f"Ooooo, cg {num} reakci si zaslouzi odmenu :D")
             first = False
             await cat(user)
             num //= 10
