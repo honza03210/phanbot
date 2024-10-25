@@ -171,9 +171,9 @@ async def on_message(message):
                 exit(0)
             elif message.content.lower() == "help":
                 await message.channel.send("reboot\npull\nupdate\nping\n")
-        else:
-            if message.content.lower() == "!phantop":
-                await print_leaderboard(message.channel)
+        
+        if message.content.lower() == "!phantop":
+            await print_leaderboard(message.channel)
 
     if message.author.id == TARGET_USER_ID:
         # await message.add_reaction('<:phannerd:1208806780818432063>')
