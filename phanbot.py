@@ -40,6 +40,7 @@ TRUSTED_CHANNEL = int(config['trusted-user-channel'])
 # Set up the bot
 intents = discord.Intents.default()
 intents.messages = True
+intents.reactions = True
 intents.message_content = True
 intents.dm_messages = True
 client = commands.Bot(command_prefix="!", intents=intents)
