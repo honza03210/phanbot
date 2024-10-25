@@ -22,7 +22,7 @@ try:
         data = load(file)
         reactions_data = defaultdict(
                 lambda: defaultdict(int),
-                {int(user): defaultdict(int | str, {emoji: count for emoji, count in emojis.items()}) for user, emojis in data.items()}
+                {int(user): defaultdict(int, {emoji: count for emoji, count in emojis.items()}) for user, emojis in data.items()}
             )
 except OSError:
     pass
