@@ -123,7 +123,9 @@ async def on_message(message):
                 os.system("python3 phanbot.py " + str(bot_id + 1) + " &")
             elif message.content.lower() == "ping":
                 await message.channel.send("bot " + str(bot_id) + " says hi! :D")
-            if message.content.lower() == "!phantop":
+
+            elif message.content.lower() == "!phantop":
+                await message.channel.send("sent to print")
                 await print_leaderboard(message.channel)
             elif message.content.lower() == "help":
                 await message.channel.send("reboot\npull\nupdate\nping\n")
