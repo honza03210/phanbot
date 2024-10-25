@@ -175,6 +175,4 @@ async def on_message(message):
         #             )
 
  
-while True:
-	client.run(TOKEN)
-	sleep(30)
+client.run(TOKEN)
