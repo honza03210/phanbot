@@ -130,7 +130,6 @@ async def on_message(message):
         if message.author.id == TRUSTED_USER:
             if message.content.lower() == "reboot":
                 await message.channel.send("Rebooting :)")
-                client.close()
                 exit(0)
                 os.system("sudo /sbin/reboot")
             elif message.content.lower() == "pull":
@@ -146,7 +145,6 @@ async def on_message(message):
                 await message.channel.send("sent to print")
                 await print_leaderboard(message.channel)
             elif message.content.lower() == "kill":
-                client.close()
                 exit(0)
             elif message.content.lower() == "help":
                 await message.channel.send("reboot\npull\nupdate\nping\n")
