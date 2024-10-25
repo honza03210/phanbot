@@ -77,18 +77,22 @@ async def on_reaction_add(reaction, user):
     save_reactions()
 
 @client.event
-async def on_raw_reaction_add(self, payload):
-    print('raw')
+async def on_raw_reaction_add(payload):
+    user = await client.fetch_user(payload.user_id)
+    if user.bot:
+        return
+    reactions_data[payload.user_id][payload.emoji] += 1
+    reactions_data[payload.user_id]['total'] += 1
+    save_reactions()
 
 
 @client.event
-async def on_reaction_remove(reaction, user):
-    if reaction.message.author_id != TARGET_USER_ID:
-        return
+async def on_raw_reaction_remove(payload):
+    user = await client.fetch_user(payload.user_id)
     if user.bot:
         return
-    reactions_data[user.id][reaction.emoji] -= 1
-    reactions_data[user.id]['total'] -= 1
+    reactions_data[payload.user_id][payload.emoji] -= 1
+    reactions_data[payload.user_id]['total'] -= 1
     save_reactions()
 
 async def print_leaderboard(channel):
