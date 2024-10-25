@@ -129,10 +129,10 @@ async def on_raw_reaction_remove(payload):
 async def print_leaderboard(channel):
     tuples = []
     for user in reactions_data:
-        tuples.append((user, reactions_data[user]['total']))
+        tuples.append((reactions_data[user]['total'], user))
     tuples.sort()
     mesg = "----PhanBoard----\n"
-    for i, (user, total) in enumerate(tuples):
+    for i, (total, user) in enumerate(tuples):
         usr = await client.fetch_user(user)
         mesg += f"{i + 1}. {usr.display_name} -> {total}\n"
     if mesg == '':
