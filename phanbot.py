@@ -177,5 +177,7 @@ async def on_message(message):
         #                 f"cg, {message.author.mention}! Naposledy ses tady zeptat pred vic jak {time_difference.total_seconds() // 60} minutama :D"
         #             )
 
- 
-client.run(TOKEN)
+
+while True:
+    client.run(TOKEN)
+    sleep(10)
