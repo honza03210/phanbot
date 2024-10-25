@@ -101,6 +101,8 @@ async def on_raw_reaction_add(payload):
             first = False
             await cat(user)
             num //= 10
+        else:
+            break
 
     save_reactions()
 
