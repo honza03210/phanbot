@@ -128,6 +128,7 @@ async def on_message(message):
                 await message.channel.send("Bot " + str(bot_id) + " terminated")
                 exit(0)
         if message.author.id == TARGET_USER_ID:
+            message.channel.send("Nice try, Tome xd")
             return
         if message.author.id == TRUSTED_USER:
             if message.content.lower() == "reboot":
