@@ -66,8 +66,9 @@ async def on_ready():
 
 @client.event
 async def on_reaction_add(reaction, user):
-    if reaction.message.author_id != TARGET_USER_ID:
-        return
+    print('reaction added')
+    # if reaction.message.author_id != TARGET_USER_ID:
+    #     return
     if user.bot:
         return
     reactions_data[user.id][reaction.emoji] += 1
