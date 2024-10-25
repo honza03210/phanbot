@@ -81,7 +81,7 @@ async def on_raw_reaction_add(payload):
     user = await client.fetch_user(payload.user_id)
     if user.bot:
         return
-    reactions_data[payload.user_id][payload.emoji] += 1
+    reactions_data[payload.user_id][payload.emoji.id] += 1
     reactions_data[payload.user_id]['total'] += 1
     save_reactions()
 
@@ -91,7 +91,7 @@ async def on_raw_reaction_remove(payload):
     user = await client.fetch_user(payload.user_id)
     if user.bot:
         return
-    reactions_data[payload.user_id][payload.emoji] -= 1
+    reactions_data[payload.user_id][payload.emoji.id] -= 1
     reactions_data[payload.user_id]['total'] -= 1
     save_reactions()
 
@@ -123,6 +123,8 @@ async def on_message(message):
         if message.author.id == TRUSTED_USER:
             if message.content.lower() == "reboot":
                 await message.channel.send("Rebooting :)")
+                client.close()
+                exit(0)
                 os.system("sudo /sbin/reboot")
             elif message.content.lower() == "pull":
                 await message.channel.send("pulling")
