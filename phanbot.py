@@ -102,7 +102,7 @@ async def print_leaderboard(channel):
     tuples.sort()
     mesg = ''
     for i, (user, total) in enumerate(tuples):
-        mesg += f"{i + 1}. {client.get_user(user).display_name} -> {total}"
+        mesg += f"{i + 1}. {client.fetch_user(user).display_name} -> {total}"
     if mesg == '':
         await channel.send("No data :(")
         return
