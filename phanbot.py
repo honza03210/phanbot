@@ -6,6 +6,7 @@ from json import load, dump
 import os
 from sys import argv
 from collections import defaultdict
+import requests
 
 CONFIG_FILE = 'config.json'
 REACTIONS_FILE = 'reactions.json'
@@ -36,6 +37,7 @@ TARGET_USER_ID = int(config['phantom-id'])  # Replace with the user's Discord ID
 TARGET_CHANNEL_ID = int(config['help-pls-id'])
 TRUSTED_USER = int(config['trusted-user-id'])
 TRUSTED_CHANNEL = int(config['trusted-user-channel'])
+CAT_KEY = config['cat_key']
 
 # Set up the bot
 intents = discord.Intents.default()
@@ -64,6 +66,17 @@ async def on_ready():
     trusted_channel = await client.fetch_channel(TRUSTED_CHANNEL)
     if trusted_channel:
         await trusted_channel.send(f"Nazdar! PhanBot {str(bot_id)} ready {datetime.now().strftime('%d/%m/%Y, %H:%M:%S')}")
+
+
+async def cat(ctx):
+    url = "https://api.thecatapi.com/v1/images/search"
+    headers = {"x-api-key": CAT_KEY}
+    response = requests.get(url, headers=headers)
+
+    if response.status_code == 200:
+        cat_url = response.json()[0]["url"]
+        await ctx.send("Tady mas kocicku <3")
+        await ctx.respond(cat_url)
 
 
 @client.event
@@ -144,13 +157,13 @@ async def on_message(message):
                 os.system("python3 phanbot.py " + str(bot_id + 1) + " &")
             elif message.content.lower() == "ping":
                 await message.channel.send("bot " + str(bot_id) + " says hi! :D")
-            elif message.content.lower() == "!phantop":
-                await print_leaderboard(message.channel)
             elif message.content.lower() == "kill":
                 exit(0)
             elif message.content.lower() == "help":
                 await message.channel.send("reboot\npull\nupdate\nping\n")
-
+        else:
+            if message.content.lower() == "!phantop":
+                await print_leaderboard(message.channel)
 
     if message.author.id == TARGET_USER_ID:
         # await message.add_reaction('<:phannerd:1208806780818432063>')
