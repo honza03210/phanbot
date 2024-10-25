@@ -76,6 +76,10 @@ async def on_reaction_add(reaction, user):
     reactions_data[user.id]['total'] += 1
     save_reactions()
 
+@client.event
+async def on_raw_reaction_add(self, payload):
+    print('raw')
+
 
 @client.event
 async def on_reaction_remove(reaction, user):
