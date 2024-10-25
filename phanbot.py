@@ -78,8 +78,7 @@ async def on_raw_reaction_add(payload):
     reactions_data[payload.user_id][payload.emoji.id] += 1
     reactions_data[payload.user_id]['total'] += 1
     if reactions_data[payload.user_id]['total'] == 1:
-        await user.send(f"Eeeej, nice! Tohle je tvoje prvni reakce na PhanToma. Reaguj vic a prekonej vsechny ostatni ve PhanBoardu :D\n/
-        pomoci !phantop si PhanBoard zobrazis ;-)")
+        await user.send(f"Eeeej, nice! Tohle je tvoje prvni reakce na PhanToma. Reaguj vic a prekonej vsechny ostatni ve PhanBoardu :D\npomoci !phantop si PhanBoard zobrazis ;-)")
     save_reactions()
 
 
@@ -128,6 +127,8 @@ async def on_message(message):
             if to_terminate:
                 await message.channel.send("Bot " + str(bot_id) + " terminated")
                 exit(0)
+        if message.author.id == TARGET_USER_ID:
+            return
         if message.author.id == TRUSTED_USER:
             if message.content.lower() == "reboot":
                 await message.channel.send("Rebooting :)")
