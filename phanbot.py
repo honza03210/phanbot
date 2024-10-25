@@ -46,6 +46,7 @@ intents.dm_messages = True
 client = commands.Bot(command_prefix="!", intents=intents)
 bot_id = 0
 to_terminate = False
+last_payload = None
 
 if len(argv) > 1:
     bot_id = int(argv[1])
@@ -66,18 +67,9 @@ async def on_ready():
 
 
 @client.event
-async def on_reaction_add(reaction, user):
-    print('reaction added')
-    # if reaction.message.author_id != TARGET_USER_ID:
-    #     return
-    if user.bot:
-        return
-    reactions_data[user.id][reaction.emoji] += 1
-    reactions_data[user.id]['total'] += 1
-    save_reactions()
-
-@client.event
 async def on_raw_reaction_add(payload):
+    if last_payload != None and payload == last_payload:
+        return
     if payload.message_author_id != TARGET_USER_ID:
         return
     user = await client.fetch_user(payload.user_id)
@@ -85,11 +77,17 @@ async def on_raw_reaction_add(payload):
         return
     reactions_data[payload.user_id][payload.emoji.id] += 1
     reactions_data[payload.user_id]['total'] += 1
+    if reactions_data[payload.user_id]['total'] == 1:
+        await user.send(f"Eeeej, nice! Tohle je tvoje prvni reakce na PhanToma. Reaguj vic a prekonej vsechny ostatni ve PhanBoardu :D\n/
+        pomoci !phantop si PhanBoard zobrazis ;-)")
     save_reactions()
 
 
 @client.event
 async def on_raw_reaction_remove(payload):
+    global last_payload
+    if last_payload != None and payload == last_payload:
+        return
     print(payload.channel_id)
     channel = await client.fetch_channel(payload.channel_id)
     print(payload.message_id)
@@ -145,7 +143,7 @@ async def on_message(message):
             elif message.content.lower() == "ping":
                 await message.channel.send("bot " + str(bot_id) + " says hi! :D")
             elif message.content.lower() == "!phantop":
-                await message.channel.send("sent to print")
+                await message.channel.send("----PhanBoard----")
                 await print_leaderboard(message.channel)
             elif message.content.lower() == "kill":
                 exit(0)
