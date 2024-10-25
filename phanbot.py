@@ -76,7 +76,7 @@ async def cat(ctx):
     if response.status_code == 200:
         cat_url = response.json()[0]["url"]
         await ctx.send("Tady mas kocicku <3")
-        await ctx.respond(cat_url)
+        await ctx.send(cat_url)
 
 
 @client.event
@@ -92,6 +92,16 @@ async def on_raw_reaction_add(payload):
     reactions_data[payload.user_id]['total'] += 1
     if reactions_data[payload.user_id]['total'] == 1:
         await user.send(f"Eeeej, nice! Tohle je tvoje prvni reakce na PhanToma. Reaguj vic a prekonej vsechny ostatni ve PhanBoardu :D\npomoci !phantop si PhanBoard zobrazis ;-)")
+    num = reactions_data[payload.user_id]['total']
+    first = True
+    while num > 0:
+        if num % 10 == 0:
+            if first:
+                user.send(f"Ooooo, cg {num} reakci si zaslouzi odmenu :D")
+            first = False
+            await cat(user)
+            num //= 10
+
     save_reactions()
 
 
