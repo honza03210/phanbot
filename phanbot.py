@@ -120,7 +120,7 @@ async def on_message(message):
             elif message.content.lower() == "ping":
                 await message.channel.send("bot " + str(bot_id) + " says hi! :D")
             if message.content.lower() == "!phantop":
-                print_leaderboard(message.channel)
+                await print_leaderboard(message.channel)
             elif message.content.lower() == "help":
                 await message.channel.send("reboot\npull\nupdate\nping\n")
 
