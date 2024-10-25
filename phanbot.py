@@ -106,10 +106,10 @@ async def print_leaderboard(channel):
     for user in reactions_data:
         tuples.append((user, reactions_data[user]['total']))
     tuples.sort()
-    mesg = ''
+    mesg = "----PhanBoard----"
     for i, (user, total) in enumerate(tuples):
         usr = await client.fetch_user(user)
-        mesg += f"{i + 1}. {usr.display_name} -> {total}"
+        mesg += f"{i + 1}. {usr.display_name} -> {total}\n"
     if mesg == '':
         await channel.send("No data :(")
         return
@@ -145,7 +145,6 @@ async def on_message(message):
             elif message.content.lower() == "ping":
                 await message.channel.send("bot " + str(bot_id) + " says hi! :D")
             elif message.content.lower() == "!phantop":
-                await message.channel.send("----PhanBoard----")
                 await print_leaderboard(message.channel)
             elif message.content.lower() == "kill":
                 exit(0)
