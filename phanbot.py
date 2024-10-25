@@ -78,7 +78,7 @@ async def on_reaction_add(reaction, user):
 
 @client.event
 async def on_raw_reaction_add(payload):
-    if payload.author.id != TARGET_USER_ID:
+    if payload.author_id != TARGET_USER_ID:
         return
     user = await client.fetch_user(payload.user_id)
     if user.bot:
