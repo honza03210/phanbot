@@ -148,7 +148,9 @@ async def print_leaderboard(channel):
         this.append(str(phanbomb))
         data.append(this.copy())
         # this += f"{i + 1}. {usr.display_name} -> {total} | {phanbomb}\n"
-    mesg = tabulate(data, headers)
+    mesg = '```'
+    mesg += tabulate(data, headers)
+    mesg += '```'
 
     if mesg == '':
         await channel.send("No data :(")
