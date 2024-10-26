@@ -176,7 +176,7 @@ async def on_message(message):
         
         if message.content.lower() == "!phantop":
             await print_leaderboard(message.channel)
-    if message.channel == TARGET_CHANNEL_ID:
+    if message.channel.id == TARGET_CHANNEL_ID:
         trusted_channel = await client.fetch_channel(TRUSTED_CHANNEL)
         if trusted_channel:
             await trusted_channel.send(f"{message.author.name}: {str(message.content)}\n")
