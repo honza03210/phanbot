@@ -161,7 +161,7 @@ async def print_leaderboard(channel):
 async def phanbomb():
     tuples = []
     for user_id in reactions_data:
-        tuples.append((reactions_data[user_id].get('highest', 0) - reactions_data[user_id].get('phanbomb', 0), user_id, reactions_data[user_id]['phanpoints']))
+        tuples.append((reactions_data[user_id].get('total', 0) - reactions_data[user_id].get('phanbomb', 0), user_id, reactions_data[user_id]['phanpoints']))
     tuples.sort(reverse=True)
     reward = len(tuples)
     users = []
