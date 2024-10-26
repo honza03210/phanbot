@@ -133,17 +133,35 @@ async def on_raw_reaction_remove(payload):
 async def print_leaderboard(channel):
     tuples = []
     for user in reactions_data:
-        tuples.append((reactions_data[user]['total'], user))
+        tuples.append((reactions_data[user]['total'], user, reactions_data[user].get('phanbomb', 0), reactions_data[user]['phanpoints']))
     tuples.sort(reverse=True)
-    mesg = "----PhanBoard----\n"
-    for i, (total, user) in enumerate(tuples):
+    mesg = "----PhanBoard----\nporadi. jmeno -> celkem | od posledni PhanBomby"
+    for i, (total, user, phanbomb) in enumerate(tuples):
         usr = await client.fetch_user(user)
-        mesg += f"{i + 1}. {usr.display_name} -> {total}\n"
+        mesg += f"{i + 1}. {usr.display_name} -> {total} | {phanbomb}\n"
     if mesg == '':
         await channel.send("No data :(")
         return
 
     await channel.send(mesg)
+
+async def phanbomb():
+    tuples = []
+    for user_id in reactions_data:
+        tuples.append((reactions_data[user].get('highest', 0) - reactions_data[user].get('phanbomb', 0), user_id, reactions_data[user]['phanpoints']))
+    tuples.sort(reverse=True)
+    reward = len(tuples)
+    users = []
+    for i, (since_last, user_id, phanpoints) in enumerate(tuples):
+        user = await client.fetch_user(user_id)
+        users.append(user)
+        # reactions_data[user_id]['phanpoints'] += max(0, reward)
+        # reactions_data[user_id]['phanbomb'] += since_last
+        if user_id == TRUSTED_USER:
+            user.send(f"Umistil/a ses na {i + 1}. miste z {len(tuples)}, od posledni PhanBomby jsi dal/a PhanTomovi {since_last} reakci.\n Dostavas tedy +{reward} PhanPointu (ted mas {phanpoints + reward})\nTakto ted vypada PhanBoard:")
+            print_leaderboard(user)
+        reward -= 1
+
 
 
 
@@ -166,6 +184,8 @@ async def on_message(message):
                 await message.channel.send("Rebooting :)")
                 exit(0)
                 os.system("sudo /sbin/reboot")
+            elif message.content.lower() == "bomb":
+                await phanbomb()
             elif message.content.lower() == "pull":
                 await message.channel.send("pulling")
                 os.system("git pull main --no-edit")
