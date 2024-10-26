@@ -7,6 +7,7 @@ import os
 from sys import argv
 from collections import defaultdict
 import requests
+from tabulate import tabulate
 
 CONFIG_FILE = 'config.json'
 REACTIONS_FILE = 'reactions.json'
@@ -135,10 +136,17 @@ async def print_leaderboard(channel):
     for user in reactions_data:
         tuples.append((reactions_data[user]['total'], user, reactions_data[user].get('phanbomb', 0), reactions_data[user]['phanpoints']))
     tuples.sort(reverse=True)
-    mesg = "----PhanBoard----\nporadi. jmeno -> celkem | od posledni PhanBomby"
+    # mesg = "----PhanBoard----\nporadi. jmeno -> celkem | od posledni PhanBomby\n"
+    headers = ['Poradi', 'Jmeno', 'Celkem bodu', 'Od posledni PhanBomby']
     for i, (total, user, phanbomb, phanpoints) in enumerate(tuples):
+        this = []
         usr = await client.fetch_user(user)
-        mesg += f"{i + 1}. {usr.display_name} -> {total} | {phanbomb}\n"
+        this.append(f"{i + 1}.")
+        this.append(usr.display_name)
+        this.append(str(total))
+        this.append(str(phanbomb))
+        mesg = tabulate(this, headers)
+        # this += f"{i + 1}. {usr.display_name} -> {total} | {phanbomb}\n"
     if mesg == '':
         await channel.send("No data :(")
         return
