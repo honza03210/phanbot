@@ -136,7 +136,7 @@ async def print_leaderboard(channel):
         tuples.append((reactions_data[user]['total'], user, reactions_data[user].get('phanbomb', 0), reactions_data[user]['phanpoints']))
     tuples.sort(reverse=True)
     mesg = "----PhanBoard----\nporadi. jmeno -> celkem | od posledni PhanBomby"
-    for i, (total, user, phanbomb) in enumerate(tuples):
+    for i, (total, user, phanbomb, phanpoints) in enumerate(tuples):
         usr = await client.fetch_user(user)
         mesg += f"{i + 1}. {usr.display_name} -> {total} | {phanbomb}\n"
     if mesg == '':
