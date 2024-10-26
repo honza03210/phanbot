@@ -138,6 +138,7 @@ async def print_leaderboard(channel):
     tuples.sort(reverse=True)
     # mesg = "----PhanBoard----\nporadi. jmeno -> celkem | od posledni PhanBomby\n"
     headers = ['Poradi', 'Jmeno', 'Celkem bodu', 'Od posledni PhanBomby']
+    data = []
     for i, (total, user, phanbomb, phanpoints) in enumerate(tuples):
         this = []
         usr = await client.fetch_user(user)
@@ -145,8 +146,10 @@ async def print_leaderboard(channel):
         this.append(usr.display_name)
         this.append(str(total))
         this.append(str(phanbomb))
-        mesg = tabulate(this.copy(), headers)
+        data.append(this.copy())
         # this += f"{i + 1}. {usr.display_name} -> {total} | {phanbomb}\n"
+    mesg = tabulate(data, headers)
+
     if mesg == '':
         await channel.send("No data :(")
         return
