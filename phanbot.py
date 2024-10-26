@@ -146,7 +146,7 @@ async def print_leaderboard(channel):
         this.append(f"{i + 1}.")
         this.append(usr.display_name)
         this.append(str(total))
-        this.append(str(phanbomb))
+        this.append(str(total - phanbomb))
         data.append(this.copy())
         # this += f"{i + 1}. {usr.display_name} -> {total} | {phanbomb}\n"
     mesg = '```'
