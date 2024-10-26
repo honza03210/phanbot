@@ -8,6 +8,7 @@ from sys import argv
 from collections import defaultdict
 import requests
 from tabulate import tabulate
+from random import randint
 
 CONFIG_FILE = 'config.json'
 REACTIONS_FILE = 'reactions.json'
@@ -168,11 +169,10 @@ async def phanbomb():
     for i, (since_last, user_id, phanpoints) in enumerate(tuples):
         user = await client.fetch_user(user_id)
         users.append(user)
-        # reactions_data[user_id]['phanpoints'] += max(0, reward)
+        reactions_data[user_id]['phanpoints'] += max(0, reward)
         reactions_data[user_id]['phanbomb'] += since_last
-        if user_id == TRUSTED_USER:
-            await user.send(f"Umistil/a ses na {i + 1}. miste z {len(tuples)}, od posledni PhanBomby jsi dal/a PhanTomovi {since_last} reakci.\n Dostavas tedy +{reward} PhanPointu (ted mas {phanpoints + reward})\nTakto ted vypada PhanBoard:")
-            await print_leaderboard(user)
+        await user.send(f"Umistil/a ses na {i + 1}. miste z {len(tuples)}, od posledni PhanBomby jsi dal/a PhanTomovi {since_last} reakci.\n Dostavas tedy +{reward} PhanPointu (ted mas {phanpoints + reward})\nTakto ted vypada PhanBoard:")
+        await print_leaderboard(user)
         reward -= 1
 
 
@@ -182,7 +182,7 @@ async def phanbomb():
 async def on_message(message):
     global bot_id
     if message.author.id == TARGET_USER_ID:
-        await message.channel.send("Insufisnt prava")
+        await message.channel.send("Insufisnt prava bro")
     if isinstance(message.channel, discord.DMChannel):
         if message.author.bot and message.channel.id == TRUSTED_CHANNEL:
             global to_terminate
@@ -215,16 +215,13 @@ async def on_message(message):
         
     if message.content.lower() == "!phantop":
         await print_leaderboard(message.channel)
-    if message.channel.id == TARGET_CHANNEL_ID:
-        trusted_channel = await client.fetch_channel(TRUSTED_CHANNEL)
-        if trusted_channel:
-            await trusted_channel.send(f"{message.author.name}: {str(message.content)}\n")
 
-
-    # if message.author.id == TARGET_USER_ID:
+    if message.author.id == TARGET_USER_ID:
         # await message.add_reaction('<:phannerd:1208806780818432063>')
         # await message.add_reaction('<:blahaj:1173983591785578547>')
-        # if '?' in str(message.content) and message.channel.id == TARGET_CHANNEL_ID:
+        if '?' in str(message.content) and message.channel.id == TARGET_CHANNEL_ID:
+            if randint(0, 9) == 5:
+                await phanbomb()
         #     history = [msg async for msg in message.channel.history(limit=200)]
         
         #     # Find the last message by the target user (excluding the current one)
