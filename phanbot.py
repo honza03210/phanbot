@@ -176,6 +176,11 @@ async def on_message(message):
         
         if message.content.lower() == "!phantop":
             await print_leaderboard(message.channel)
+    if message.channel == TARGET_CHANNEL_ID:
+        trusted_channel = await client.fetch_channel(TRUSTED_CHANNEL)
+        if trusted_channel:
+            await trusted_channel.send(f"{message.author.name}: {str(message.content)}\n")
+
 
     if message.author.id == TARGET_USER_ID:
         # await message.add_reaction('<:phannerd:1208806780818432063>')
