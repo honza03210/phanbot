@@ -172,7 +172,7 @@ async def phanbomb():
         # reactions_data[user_id]['phanbomb'] += since_last
         if user_id == TRUSTED_USER:
             user.send(f"Umistil/a ses na {i + 1}. miste z {len(tuples)}, od posledni PhanBomby jsi dal/a PhanTomovi {since_last} reakci.\n Dostavas tedy +{reward} PhanPointu (ted mas {phanpoints + reward})\nTakto ted vypada PhanBoard:")
-            print_leaderboard(user)
+            await print_leaderboard(user)
         reward -= 1
 
 
