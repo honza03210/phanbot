@@ -90,20 +90,24 @@ async def on_raw_reaction_add(payload):
         return
     reactions_data[payload.user_id][payload.emoji.id] += 1
     reactions_data[payload.user_id]['total'] += 1
-    if reactions_data[payload.user_id]['total'] == 1:
-        await user.send(f"Eeeej, nice! Tohle je tvoje prvni reakce na PhanToma. Reaguj vic a prekonej vsechny ostatni ve PhanBoardu :D\npomoci !phantop si PhanBoard zobrazis ;-)")
-    num = reactions_data[payload.user_id]['total']
-    first = True
-    while num > 0:
-        if num % 10 == 0:
-            if first:
-                await user.send(f"Ooooo, cg, {num} reakci si zaslouzi odmenu :D")
-            first = False
-            await cat(user)
-            num //= 10
-        else:
-            break
+    if reactions_data[payload.user_id]['total'] > reactions_data[payload.user_id].get('highest', 0):
+        reactions_data[payload.user_id]['highest'] = reactions_data[payload.user_id]['total']
+        num = reactions_data[payload.user_id]['total']
+        first = True
 
+        if reactions_data[payload.user_id]['total'] == 1:
+            await user.send(f"Eeeej, nice! Tohle je tvoje prvni reakce na PhanToma. Reaguj vic a prekonej vsechny ostatni ve PhanBoardu :D\npomoci !phantop si PhanBoard zobrazis ;-)")
+
+        while num > 0:
+            if num % 10 == 0:
+                if first:
+                    await user.send(f"Ooooo, cg, {num} reakci si zaslouzi odmenu :D")
+                first = False
+                await cat(user)
+                num //= 10
+            else:
+                break
+    
     save_reactions()
 
 
@@ -146,6 +150,8 @@ async def print_leaderboard(channel):
 @client.event
 async def on_message(message):
     global bot_id
+    if message.author.id == TARGET_USER_ID:
+        await message.channel.send("Insufisnt prava")
     if isinstance(message.channel, discord.DMChannel):
         if message.author.bot and message.channel.id == TRUSTED_CHANNEL:
             global to_terminate
@@ -174,17 +180,17 @@ async def on_message(message):
             elif message.content.lower() == "help":
                 await message.channel.send("reboot\npull\nupdate\nping\n")
         
-        if message.content.lower() == "!phantop":
-            await print_leaderboard(message.channel)
+    if message.content.lower() == "!phantop":
+        await print_leaderboard(message.channel)
     if message.channel.id == TARGET_CHANNEL_ID:
         trusted_channel = await client.fetch_channel(TRUSTED_CHANNEL)
         if trusted_channel:
             await trusted_channel.send(f"{message.author.name}: {str(message.content)}\n")
 
 
-    if message.author.id == TARGET_USER_ID:
+    # if message.author.id == TARGET_USER_ID:
         # await message.add_reaction('<:phannerd:1208806780818432063>')
-        await message.add_reaction('<:blahaj:1173983591785578547>')
+        # await message.add_reaction('<:blahaj:1173983591785578547>')
         # if '?' in str(message.content) and message.channel.id == TARGET_CHANNEL_ID:
         #     history = [msg async for msg in message.channel.history(limit=200)]
         
