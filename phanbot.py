@@ -182,6 +182,7 @@ async def phanbomb():
 @client.event
 async def on_message(message):
     global bot_id
+    content = message.content.lower()
     if message.author.id == TARGET_USER_ID:
         await message.channel.send("Insufisnt prava bro")
     if isinstance(message.channel, discord.DMChannel):
@@ -194,27 +195,27 @@ async def on_message(message):
             message.channel.send("Nice try, Tome xd")
             return
         if message.author.id == TRUSTED_USER:
-            if message.content.lower() == "reboot":
+            if content == "reboot":
                 await message.channel.send("Rebooting :)")
                 exit(0)
                 os.system("sudo /sbin/reboot")
-            elif message.content.lower() == "bomb":
+            elif content == "bomb":
                 await phanbomb()
-            elif message.content.lower() == "pull":
+            elif content == "pull":
                 await message.channel.send("pulling")
                 os.system("git pull main --no-edit")
-            elif message.content.lower() == "update":
+            elif content == "update":
                 to_terminate = True
                 os.system("git pull main --no-edit")
                 os.system("python3 phanbot.py " + str(bot_id + 1) + " &")
-            elif message.content.lower() == "ping":
+            elif content == "ping":
                 await message.channel.send("bot " + str(bot_id) + " says hi! :D")
-            elif message.content.lower() == "kill":
+            elif content == "kill":
                 exit(0)
-            elif message.content.lower() == "help":
+            elif content == "help":
                 await message.channel.send("reboot\npull\nupdate\nping\n")
         
-    if message.content.lower() == "!phantop":
+    if content == "!phantop" or content == '!top' or content == 'top':
         await print_leaderboard(message.channel)
 
     if message.author.id == TARGET_USER_ID:
