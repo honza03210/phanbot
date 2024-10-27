@@ -82,7 +82,7 @@ def render_dict_as_table(table, rows):
     # Render the table onto the image
     y = 5
     for row in rows:
-        draw.text((0, y), row, font=font, fill=table_color)
+        draw.text((5, y), row, font=font, fill=table_color)
         y += line_height
     return image
 
