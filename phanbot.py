@@ -4,10 +4,12 @@ from discord.ext import commands, tasks
 from datetime import datetime, timezone
 from json import load, dump
 import os
+import io
 from sys import argv
 from collections import defaultdict
 import requests
 from tabulate import tabulate
+from PIL import Image, ImageDraw, ImageFont
 from random import randint
 
 CONFIG_FILE = 'config.json'
@@ -59,6 +61,30 @@ if len(argv) > 1:
 def save_reactions():
     with open(REACTIONS_FILE, 'w+') as file:
         dump(reactions_data, file)
+
+def render_dict_as_table(table, rows):
+
+    # Create a new image with a white background
+    img_width, img_height = 1000, 50 + 50 * rows
+    background_color = (0, 0, 0)  # White
+    table_color = (255, 255, 255)  # Black
+    font_path = "/Library/Fonts/Courier New.ttf"
+
+    font_size = 16
+    line_spacing = 4
+    font = ImageFont.truetype(font_path, font_size)
+    line_height = font.getsize("hg")[1] + line_spacing
+    rows = table.split("\n")
+
+    image = Image.new("RGB", (img_width, img_height), background_color)
+    draw = ImageDraw.Draw(image)
+    
+    # Render the table onto the image
+    y = 0
+    for row in rows:
+        draw.text((0, y), row, font=font, fill=table_color)
+        y += line_height
+    return image
 
 @client.event
 async def on_ready():
@@ -131,6 +157,33 @@ async def on_raw_reaction_remove(payload):
     reactions_data[payload.user_id][payload.emoji.id] -= 1
     reactions_data[payload.user_id]['total'] -= 1
     save_reactions()
+
+async def print_leaderboard_img(channel):
+    tuples = []
+    for user in reactions_data:
+        tuples.append((reactions_data[user]['total'], user, reactions_data[user].get('phanbomb', 0), reactions_data[user]['phanpoints']))
+    tuples.sort(reverse=True)
+    # mesg = "----PhanBoard----\nporadi. jmeno -> celkem | od posledni PhanBomby\n"
+    headers = ['Poradi', 'Jmeno', 'Celkem bodu', 'Od posledni PhanBomby']
+    data = []
+    for i, (total, user, phanbomb, phanpoints) in enumerate(tuples):
+        this = []
+        usr = await client.fetch_user(user)
+        this.append(f"{i + 1}.")
+        this.append(usr.display_name)
+        this.append(str(total))
+        this.append(str(total - phanbomb))
+        data.append(this.copy())
+        # this += f"{i + 1}. {usr.display_name} -> {total} | {phanbomb}\n"
+    table = tabulate(data, headers)
+    image = render_dict_as_table(table, len(tuples))
+
+    with io.BytesIO() as image_binary:
+        image.save(image_binary, 'PNG')
+        image_binary.seek(0)
+        await channel.send(file=discord.File(fp=image_binary, filename='image.png'))
+
+
 
 async def print_leaderboard(channel):
     tuples = []
@@ -217,6 +270,8 @@ async def on_message(message):
         
     if content == "!phantop" or content == '!top' or content == 'top':
         await print_leaderboard(message.channel)
+    elif content  == '!test':
+        await print_leaderboard_img(message.channel)
 
     if message.author.id == TARGET_USER_ID:
         # await message.add_reaction('<:phannerd:1208806780818432063>')
