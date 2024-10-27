@@ -65,7 +65,7 @@ def save_reactions():
 def render_dict_as_table(table, rows):
 
     # Create a new image with a white background
-    img_width, img_height = 1000, 50 + 50 * rows
+    img_width, img_height = 800, 32 + 18 * rows
     background_color = (0, 0, 0)  # White
     table_color = (255, 255, 255)  # Black
     font_path = "/usr/share/fonts/truetype/liberation2/LiberationMono-Bold.ttf"
