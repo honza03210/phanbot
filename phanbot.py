@@ -158,7 +158,7 @@ async def on_raw_reaction_remove(payload):
     reactions_data[payload.user_id]['total'] -= 1
     save_reactions()
 
-async def print_leaderboard_img(channel):
+async def print_leaderboard(channel):
     tuples = []
     for user in reactions_data:
         tuples.append((reactions_data[user]['total'], user, reactions_data[user].get('phanbomb', 0), reactions_data[user]['phanpoints']))
@@ -185,32 +185,32 @@ async def print_leaderboard_img(channel):
 
 
 
-async def print_leaderboard(channel):
-    tuples = []
-    for user in reactions_data:
-        tuples.append((reactions_data[user]['total'], user, reactions_data[user].get('phanbomb', 0), reactions_data[user]['phanpoints']))
-    tuples.sort(reverse=True)
-    # mesg = "----PhanBoard----\nporadi. jmeno -> celkem | od posledni PhanBomby\n"
-    headers = ['Poradi', 'Jmeno', 'Celkem bodu', 'Od posledni PhanBomby']
-    data = []
-    for i, (total, user, phanbomb, phanpoints) in enumerate(tuples):
-        this = []
-        usr = await client.fetch_user(user)
-        this.append(f"{i + 1}.")
-        this.append(usr.display_name)
-        this.append(str(total))
-        this.append(str(total - phanbomb))
-        data.append(this.copy())
-        # this += f"{i + 1}. {usr.display_name} -> {total} | {phanbomb}\n"
-    mesg = '```'
-    mesg += tabulate(data, headers)
-    mesg += '```'
+# async def print_leaderboard(channel):
+#     tuples = []
+#     for user in reactions_data:
+#         tuples.append((reactions_data[user]['total'], user, reactions_data[user].get('phanbomb', 0), reactions_data[user]['phanpoints']))
+#     tuples.sort(reverse=True)
+#     # mesg = "----PhanBoard----\nporadi. jmeno -> celkem | od posledni PhanBomby\n"
+#     headers = ['Poradi', 'Jmeno', 'Celkem bodu', 'Od posledni PhanBomby']
+#     data = []
+#     for i, (total, user, phanbomb, phanpoints) in enumerate(tuples):
+#         this = []
+#         usr = await client.fetch_user(user)
+#         this.append(f"{i + 1}.")
+#         this.append(usr.display_name)
+#         this.append(str(total))
+#         this.append(str(total - phanbomb))
+#         data.append(this.copy())
+#         # this += f"{i + 1}. {usr.display_name} -> {total} | {phanbomb}\n"
+#     mesg = '```'
+#     mesg += tabulate(data, headers)
+#     mesg += '```'
 
-    if mesg == '':
-        await channel.send("No data :(")
-        return
+#     if mesg == '':
+#         await channel.send("No data :(")
+#         return
 
-    await channel.send(mesg)
+#     await channel.send(mesg)
 
 async def phanbomb():
     tuples = []
@@ -270,8 +270,7 @@ async def on_message(message):
         
     if content == "!phantop" or content == '!top' or content == 'top':
         await print_leaderboard(message.channel)
-    elif content  == '!test':
-        await print_leaderboard_img(message.channel)
+        # await print_leaderboard(message.channel)
 
     if message.author.id == TARGET_USER_ID:
         # await message.add_reaction('<:phannerd:1208806780818432063>')
