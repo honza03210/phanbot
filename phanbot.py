@@ -236,17 +236,17 @@ async def phanbomb():
 async def on_message(message):
     global bot_id
     content = message.content.lower()
-    if message.author.id == TARGET_USER_ID:
-        await message.channel.send("Insufisnt prava bro")
+    # if message.author.id == TARGET_USER_ID:
+    #     await message.channel.send("Insufisnt prava bro")
     if isinstance(message.channel, discord.DMChannel):
         if message.author.bot and message.channel.id == TRUSTED_CHANNEL:
             global to_terminate
             if to_terminate:
                 await message.channel.send("Bot " + str(bot_id) + " terminated")
                 exit(0)
-        if message.author.id == TARGET_USER_ID:
-            message.channel.send("Nice try, Tome xd")
-            return
+        # if message.author.id == TARGET_USER_ID:
+        #     message.channel.send("Nice try, Tome xd")
+        #     return
         if message.author.id == TRUSTED_USER:
             if content == "reboot":
                 await message.channel.send("Rebooting :)")
