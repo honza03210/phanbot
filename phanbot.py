@@ -267,7 +267,8 @@ async def on_message(message):
                 exit(0)
             elif content == "help":
                 await message.channel.send("reboot\npull\nupdate\nping\n")
-        
+            return
+            
     if content == "!phantop" or content == '!top' or content == 'top':
         await print_leaderboard(message.channel)
         # await print_leaderboard(message.channel)
@@ -276,12 +277,22 @@ async def on_message(message):
         # await message.add_reaction('<:phannerd:1208806780818432063>')
         # await message.add_reaction('<:blahaj:1173983591785578547>')
         if '?' in str(message.content):
-            if randint(0, 9) < 52:
+            await message.channel.send("Sice ti neporadim, aaale tady mas macicku :)")
+            await cat(message.channel)
+            if randint(0, 9) == 5:
                 await phanbomb("PhanTom napsal '?' a stesti nebylo na jedho strane")
+            return
         if 'nechápu' in str(message.content) or 'nechapu' in str(message.content):
+            await message.channel.send("Sice se nepostaram o to, abys to chapal, aaale tady mas macicku :)")
+            await cat(message.channel)
             if randint(0, 5) == 3:
-                await phanbomb("Phantom nechape xd")
-        
+                await phanbomb("PhanTom nechape")
+            return
+        if 'pls' in str(message.content) or 'prosim' in str(message.content):
+            await message.channel.send("Netreba prosit, tady mas macku :)")
+            await cat(message.channel)
+            return
+                       
         #     history = [msg async for msg in message.channel.history(limit=200)]
         
         #     # Find the last message by the target user (excluding the current one)
