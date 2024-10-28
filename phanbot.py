@@ -1,3 +1,7 @@
+############################################
+### abandon hope all ye who read further ###
+############################################
+
 import discord
 from time import sleep, time
 from discord.ext import commands, tasks
@@ -268,7 +272,7 @@ async def on_message(message):
             elif content == "help":
                 await message.channel.send("reboot\npull\nupdate\nping\n")
             return
-            
+
     if content == "!phantop" or content == '!top' or content == 'top':
         await print_leaderboard(message.channel)
         # await print_leaderboard(message.channel)
