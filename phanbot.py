@@ -276,7 +276,7 @@ async def on_message(message):
         # await message.add_reaction('<:phannerd:1208806780818432063>')
         # await message.add_reaction('<:blahaj:1173983591785578547>')
         if '?' in str(message.content):
-            if randint(0, 9) == 5:
+            if randint(0, 9) < 52:
                 await phanbomb("PhanTom napsal '?' a stesti nebylo na jedho strane")
         if 'nechápu' in str(message.content) or 'nechapu' in str(message.content):
             if randint(0, 5) == 3:
