@@ -212,7 +212,7 @@ async def print_leaderboard(channel):
 
 #     await channel.send(mesg)
 
-async def phanbomb():
+async def phanbomb(trigger: str):
     tuples = []
     for user_id in reactions_data:
         tuples.append((reactions_data[user_id].get('total', 0) - reactions_data[user_id].get('phanbomb', 0), user_id, reactions_data[user_id]['phanpoints']))
@@ -224,7 +224,7 @@ async def phanbomb():
         users.append(user)
         reactions_data[user_id]['phanpoints'] += max(0, reward)
         reactions_data[user_id]['phanbomb'] += since_last
-        await user.send(f"Umistil/a ses na {i + 1}. miste z {len(tuples)}, od posledni PhanBomby jsi dal/a PhanTomovi {since_last} reakci.\n Dostavas tedy +{reward} PhanPointu (ted mas {phanpoints + reward})\nTakto ted vypada PhanBoard:")
+        await user.send(f"PhanBomba vybuchlaaa, protoze {trigger}.\n Umistil/a ses na {i + 1}. miste z {len(tuples)}, od posledni PhanBomby jsi dal/a PhanTomovi {since_last} reakci.\n Dostavas tedy +{reward} PhanPointu (ted mas {phanpoints + reward})\nTakto ted vypada PhanBoard:")
         await print_leaderboard(user)
         reward -= 1
     save_reactions()
@@ -275,9 +275,13 @@ async def on_message(message):
     if message.author.id == TARGET_USER_ID:
         # await message.add_reaction('<:phannerd:1208806780818432063>')
         # await message.add_reaction('<:blahaj:1173983591785578547>')
-        if '?' in str(message.content) and message.channel.id == TARGET_CHANNEL_ID:
+        if '?' in str(message.content):
             if randint(0, 9) == 5:
-                await phanbomb()
+                await phanbomb("PhanTom napsal '?' a stesti nebylo na jedho strane")
+        if 'nechápu' in str(message.content) or 'nechapu' in str(message.content):
+            if randint(0, 5) == 3:
+                await phanbomb("Phantom nechape xd")
+        
         #     history = [msg async for msg in message.channel.history(limit=200)]
         
         #     # Find the last message by the target user (excluding the current one)
