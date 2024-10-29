@@ -304,9 +304,10 @@ async def on_message(message):
         # await message.add_reaction('<:phannerd:1208806780818432063>')
         # await message.add_reaction('<:blahaj:1173983591785578547>')
         if '?' in str(content):
-            await message.channel.send("Sice ti neporadim, aaale tady mas macicku :)")
-            await cat(message.channel)
             if randint(0, 3) == 1:
+                await message.channel.send("Sice ti neporadim, aaale tady mas macicku :)")
+                await cat(message.channel)
+            
                 await phanbomb("PhanTom napsal '?' a stesti nebylo na jedho strane")
         elif 'nechápu' in str(content) or 'nechapu' in str(content):
             if randint(1, 4) == 3:
@@ -329,14 +330,14 @@ async def on_message(message):
         await print_leaderboard(message.channel)
         return
     elif first_word == '!help':
-        await message.channel.send('!points\n!shop [buy {item{}| list]\n!top\n')
+        await message.channel.send('!points\n!shop [buy {item}| list]\n!top\n')
     
     elif first_word == '!points' or first_word == '!coins' or first_word == '!phanpoints':
         await message.channel.send(f"{message.author.display_name}, mas {reactions_data[message.author.id]['phanpoints']} phanpointu")
 
     elif first_word == '!shop' or first_word == '!phanshop':
         if len(parsed) == 1:
-            await message.channel.send('Caiming suun')
+            await message.channel.send('pouzij "!shop list" pro vypis nabidky ')
         elif len(parsed) == 2:
             if parsed[1] == 'list':
                 msg = 'Nabidka v obchode:\n'
