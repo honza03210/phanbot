@@ -3,6 +3,7 @@
 ############################################
 
 import discord
+import string
 from time import sleep, time
 from discord.ext import commands, tasks
 from datetime import datetime, timezone
@@ -18,6 +19,11 @@ from random import randint
 
 CONFIG_FILE = 'config.json'
 REACTIONS_FILE = 'reactions.json'
+
+SHOP_OFFERS = {'phannerd': 12,
+               'phanmoon': 9,
+               'phanspinner': 25,
+               'susenka nebo ekvivalent': 6}
 
 os.system("git pull main --no-edit")
 
@@ -240,6 +246,8 @@ async def phanbomb(trigger: str):
 async def on_message(message):
     global bot_id
     content = message.content.lower()
+    parsed = content.split() 
+    first_word = parsed[0]
     # if message.author.id == TARGET_USER_ID:
     #     await message.channel.send("Insufisnt prava bro")
     if isinstance(message.channel, discord.DMChannel):
@@ -253,58 +261,77 @@ async def on_message(message):
         #     message.channel.send("Nice try, Tome xd")
         #     return
         if message.author.id == TRUSTED_USER:
-            if content == "reboot":
+            if first_word == "reboot":
                 await message.channel.send("Rebooting :)")
                 exit(0)
                 os.system("sudo /sbin/reboot")
-            elif content == "bomb":
+            elif first_word == "bomb":
                 await phanbomb()
-            elif content == "pull":
+            elif first_word == "pull":
                 await message.channel.send("pulling")
                 os.system("git pull main --no-edit")
-            elif content == "update":
+            elif first_word == "update":
                 # this is terrible, but it makes sure that at least one bot is still alive -> can reboot the server
                 to_terminate = True
                 os.system("git pull main --no-edit")
                 os.system("python3 phanbot.py " + str(bot_id + 1) + " &")
-            elif content == "ping":
+            elif first_word == "ping":
                 await message.channel.send("bot " + str(bot_id) + " says hi! :D")
-            elif content == "kill":
+            elif first_word == "kill":
                 await client.close()
                 exit(0)
-            elif content == "help":
+            elif first_word == "help":
                 await message.channel.send("reboot\npull\nupdate\nping\n")
             return
 
     if message.author.id == TARGET_USER_ID:
         # await message.add_reaction('<:phannerd:1208806780818432063>')
         # await message.add_reaction('<:blahaj:1173983591785578547>')
-        if '?' in str(message.content):
+        if '?' in str(content):
             await message.channel.send("Sice ti neporadim, aaale tady mas macicku :)")
             await cat(message.channel)
             if randint(0, 9) == 5:
                 await phanbomb("PhanTom napsal '?' a stesti nebylo na jedho strane")
-        elif 'nechápu' in str(message.content) or 'nechapu' in str(message.content):
+        elif 'nechápu' in str(content) or 'nechapu' in str(content):
             if randint(1, 4) == 3:
                 await message.channel.send("Sice se nepostaram o to, abys to chapal, aaale tady mas macicku :)")
                 await cat(message.channel)
                 if randint(0, 5) == 3:
                     await phanbomb("PhanTom nechape")
-        elif 'pls' in str(message.content) or 'prosim' in str(message.content):
+        elif 'xd' in str(content):
+            if randint(1, 4) == 3:
+                await cat(message.channel)
+                if randint(0, 2) == 1:
+                    await phanbomb("PhanTom napsal 'xd' xd")
+        elif 'pls' in str(content) or 'prosim' in str(content):
             if randint(1, 4) == 3:
                 await message.channel.send("Netreba prosit, tady mas macku :)")
                 await cat(message.channel)
         return
     
-    if content == "!phantop" or content == '!top' or content == 'top':
+    if first_word == "!phantop" or first_word == '!top' or first_word == 'top':
         await print_leaderboard(message.channel)
         return
     
-    elif content == '!points' or content == '!coins' or content == '!phanpoints':
+    elif first_word == '!points' or first_word == '!coins' or first_word == '!phanpoints':
         await message.channel.send(f"{message.author.display_name}, mas {reactions_data[message.author.id]['phanpoints']} phanpointu")
 
-    elif content == '!shop' or content == '!phanshop':
-        await message.channel.send('Caiming suun')
+    elif first_word == '!shop' or first_word == '!phanshop':
+        if len(parsed == 1):
+            await message.channel.send('Caiming suun')
+        elif len(parsed == 2):
+            if parsed[1] == 'list':
+                await message.channel.send('Nabidka v obchode:\n' + '\n'.join(SHOP_OFFERS.keys()))
+        elif len(parsed == 3):
+            if parsed[1] == 'buy' and parsed[2] in SHOP_OFFERS.keys():
+                if reactions_data[message.author.id]['phanpoints'] < SHOP_OFFERS[parsed[2]]:
+                    return
+                reactions_data[message.author.id]['phanpoints'] -= SHOP_OFFERS[parsed[2]]
+                trusted_channel = await client.fetch_channel(TRUSTED_CHANNEL)
+                if trusted_channel:
+                    await trusted_channel.send(f"{message.author.id}, {message.author.display_name}, just bought {parsed[2]}")
+                    
+
 
     
 
