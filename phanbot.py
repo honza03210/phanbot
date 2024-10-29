@@ -267,6 +267,8 @@ async def on_message(message):
                 os.system("sudo /sbin/reboot")
             elif first_word == "bomb":
                 await phanbomb()
+            elif first_word == "give":
+                reactions_data[TRUSTED_USER]['phanpoints'] += int(parsed[1])
             elif first_word == "pull":
                 await message.channel.send("pulling")
                 os.system("git pull main --no-edit")
@@ -330,7 +332,7 @@ async def on_message(message):
                 trusted_channel = await client.fetch_channel(TRUSTED_CHANNEL)
                 if trusted_channel:
                     await trusted_channel.send(f"{message.author.id}, {message.author.display_name}, just bought {parsed[2]}")
-                    
+
 
 
     
