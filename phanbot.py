@@ -126,17 +126,17 @@ async def on_raw_reaction_add(payload):
     user = await client.fetch_user(payload.user_id)
     if user.bot:
         return
-    channel = await client.fetch_channel(payload.channel_id)
-    message = await channel.fetch_message(payload.message_id)
-    user_react_count = 0
-    for reaction in message.reactions:
-        # Iterate over each user who reacted
-        async for reaction_user in reaction.users():
-            if reaction_user == user:
-                user_react_count += 1
-                break  # Stop counting after finding the user for this reaction
-    if user_react_count > 3:
-        return
+    # channel = await client.fetch_channel(payload.channel_id)
+    # message = await channel.fetch_message(payload.message_id)
+    # user_react_count = 0
+    # for reaction in message.reactions:
+    #     # Iterate over each user who reacted
+    #     async for reaction_user in reaction.users():
+    #         if reaction_user == user:
+    #             user_react_count += 1
+    #             break  # Stop counting after finding the user for this reaction
+    # if user_react_count > 3:
+    #     return
     reactions_data[payload.user_id][payload.emoji.id] += 1
     reactions_data[payload.user_id]['total'] += 1
     if reactions_data[payload.user_id]['total'] > reactions_data[payload.user_id].get('highest', 0):
@@ -243,10 +243,10 @@ async def phanbomb(trigger: str = 'idk'):
     for i, (since_last, user_id, phanpoints) in enumerate(tuples):
         user = await client.fetch_user(user_id)
         users.append(user)
-        # reactions_data[user_id]['phanpoints'] += max(0, reward)
+        reactions_data[user_id]['phanpoints'] += max(0, reward)
         reactions_data[user_id]['phanbomb'] = reactions_data[user_id].get('phanbomb', 0) + since_last
-        # await user.send(f"PhanBomba vybuchlaaa, protoze {trigger}.\n Umistil/a ses na {i + 1}. miste z {len(tuples)}, od posledni PhanBomby jsi dal/a PhanTomovi {since_last} reakci.\n Dostavas tedy +{reward} PhanPointu (ted mas {phanpoints + reward})\nTakto ted vypada PhanBoard:")
-        # await print_leaderboard(user)
+        await user.send(f"PhanBomba vybuchlaaa, protoze {trigger}.\n Umistil/a ses na {i + 1}. miste z {len(tuples)}, od posledni PhanBomby jsi dal/a PhanTomovi {since_last} reakci.\n Dostavas tedy +{reward} PhanPointu (ted mas {phanpoints + reward})\nTakto ted vypada PhanBoard:")
+        await print_leaderboard(user)
         reward -= 1
     save_reactions()
 
