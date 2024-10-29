@@ -319,12 +319,12 @@ async def on_message(message):
         await message.channel.send(f"{message.author.display_name}, mas {reactions_data[message.author.id]['phanpoints']} phanpointu")
 
     elif first_word == '!shop' or first_word == '!phanshop':
-        if len(parsed == 1):
+        if len(parsed) == 1:
             await message.channel.send('Caiming suun')
-        elif len(parsed == 2):
+        elif len(parsed) == 2:
             if parsed[1] == 'list':
                 await message.channel.send('Nabidka v obchode:\n' + '\n'.join(SHOP_OFFERS.keys()))
-        elif len(parsed == 3):
+        elif len(parsed) == 3:
             if parsed[1] == 'buy' and parsed[2] in SHOP_OFFERS.keys():
                 if reactions_data[message.author.id]['phanpoints'] < SHOP_OFFERS[parsed[2]]:
                     return
