@@ -328,7 +328,7 @@ async def on_message(message):
         await print_leaderboard(message.channel)
         return
     elif first_word == '!help':
-        await message.channel.send(f'!points\n!shop [buy {'{'}item{'}'}| list]\n!top\n')
+        await message.channel.send('!points\n!shop [buy {item{}| list]\n!top\n')
     
     elif first_word == '!points' or first_word == '!coins' or first_word == '!phanpoints':
         await message.channel.send(f"{message.author.display_name}, mas {reactions_data[message.author.id]['phanpoints']} phanpointu")
