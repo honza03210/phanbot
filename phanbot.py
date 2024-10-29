@@ -126,6 +126,15 @@ async def on_raw_reaction_add(payload):
     user = await client.fetch_user(payload.user_id)
     if user.bot:
         return
+    channel = await client.fetch_channel(payload.channel_id)
+    message = await channel.fetch_message(payload.message_id)
+    user_react_count = 0
+    for reaction in message.reactions:
+        users = await reaction.users().flatten()
+        if payload.user_id in users:
+            user_react_count += 1
+    if user_react_count > 3:
+        return
     reactions_data[payload.user_id][payload.emoji.id] += 1
     reactions_data[payload.user_id]['total'] += 1
     if reactions_data[payload.user_id]['total'] > reactions_data[payload.user_id].get('highest', 0):
