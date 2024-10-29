@@ -126,10 +126,15 @@ async def on_raw_reaction_add(payload):
     user = await client.fetch_user(payload.user_id)
     if user.bot:
         return
-    # channel = await client.fetch_channel(payload.channel_id)
-    # message = await channel.fetch_message(payload.message_id)
-    # user_react_count = 0
-    # for reaction in message.reactions:
+    channel = await client.fetch_channel(payload.channel_id)
+    message = await channel.fetch_message(payload.message_id)
+    user_react_count = 0
+    for reaction in message.reactions:
+        users = await reaction.users()
+        for us in users:
+            if us == user:
+                user_react_count += 1
+                break
     #     # Iterate over each user who reacted
     #     async for reaction_user in reaction.users():
     #         if reaction_user == user:
