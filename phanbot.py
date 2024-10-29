@@ -333,7 +333,7 @@ async def on_message(message):
     if first_word == "!phantop" or first_word == '!top' or first_word == 'top':
         await print_leaderboard(message.channel)
     elif first_word == '!top_legacy':
-        await print_leaderboard_legacy()
+        await print_leaderboard_legacy(message.channel)
     elif first_word == '!help':
         await message.channel.send('!points\n!shop [buy {item}| list]\n!top\n')
     
