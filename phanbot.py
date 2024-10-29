@@ -132,7 +132,7 @@ async def on_raw_reaction_add(payload):
     for reaction in message.reactions:
         users = reaction.users()
         async for us in users:
-            if us == user:
+            if us.id == user.id:
                 user_react_count += 1
                 break
     #     # Iterate over each user who reacted
