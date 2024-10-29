@@ -307,7 +307,6 @@ async def on_message(message):
             if randint(0, 3) == 1:
                 await message.channel.send("Sice ti neporadim, aaale tady mas macicku :)")
                 await cat(message.channel)
-            
                 await phanbomb("PhanTom napsal '?' a stesti nebylo na jedho strane")
         elif 'nechápu' in str(content) or 'nechapu' in str(content):
             if randint(1, 4) == 3:
@@ -337,7 +336,7 @@ async def on_message(message):
 
     elif first_word == '!shop' or first_word == '!phanshop':
         if len(parsed) == 1:
-            await message.channel.send('pouzij "!shop list" pro vypis nabidky ')
+            await message.channel.send('pouzij "!shop list" pro vypis nabidky, nebo "!shop buy NAZEV_POLOZKY" pro nakup v obchode')
         elif len(parsed) == 2:
             if parsed[1] == 'list':
                 msg = 'Nabidka v obchode:\n'
