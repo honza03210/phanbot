@@ -247,6 +247,7 @@ async def on_message(message):
             global to_terminate
             if to_terminate:
                 await message.channel.send("Bot " + str(bot_id) + " terminated")
+                await client.close()
                 exit(0)
         # if message.author.id == TARGET_USER_ID:
         #     message.channel.send("Nice try, Tome xd")
@@ -262,20 +263,18 @@ async def on_message(message):
                 await message.channel.send("pulling")
                 os.system("git pull main --no-edit")
             elif content == "update":
+                # this is terrible, but it makes sure that at least one bot is still alive -> can reboot the server
                 to_terminate = True
                 os.system("git pull main --no-edit")
                 os.system("python3 phanbot.py " + str(bot_id + 1) + " &")
             elif content == "ping":
                 await message.channel.send("bot " + str(bot_id) + " says hi! :D")
             elif content == "kill":
+                await client.close()
                 exit(0)
             elif content == "help":
                 await message.channel.send("reboot\npull\nupdate\nping\n")
             return
-
-    if content == "!phantop" or content == '!top' or content == 'top':
-        await print_leaderboard(message.channel)
-        # await print_leaderboard(message.channel)
 
     if message.author.id == TARGET_USER_ID:
         # await message.add_reaction('<:phannerd:1208806780818432063>')
@@ -285,17 +284,32 @@ async def on_message(message):
             await cat(message.channel)
             if randint(0, 9) == 5:
                 await phanbomb("PhanTom napsal '?' a stesti nebylo na jedho strane")
-            return
-        if 'nechápu' in str(message.content) or 'nechapu' in str(message.content):
-            await message.channel.send("Sice se nepostaram o to, abys to chapal, aaale tady mas macicku :)")
-            await cat(message.channel)
-            if randint(0, 5) == 3:
-                await phanbomb("PhanTom nechape")
-            return
-        if 'pls' in str(message.content) or 'prosim' in str(message.content):
-            await message.channel.send("Netreba prosit, tady mas macku :)")
-            await cat(message.channel)
-            return
+        elif 'nechápu' in str(message.content) or 'nechapu' in str(message.content):
+            if randint(1, 4) == 3:
+                await message.channel.send("Sice se nepostaram o to, abys to chapal, aaale tady mas macicku :)")
+                await cat(message.channel)
+                if randint(0, 5) == 3:
+                    await phanbomb("PhanTom nechape")
+        elif 'pls' in str(message.content) or 'prosim' in str(message.content):
+            if randint(1, 4) == 3:
+                await message.channel.send("Netreba prosit, tady mas macku :)")
+                await cat(message.channel)
+        return
+    
+    if content == "!phantop" or content == '!top' or content == 'top':
+        await print_leaderboard(message.channel)
+        return
+    
+    elif content == '!points' or content == '!coins' or content == '!phanpoints':
+        await message.channel.send(f"{message.author.display_name}, mas {reactions_data[message.author.id]['phanpoints']} phanpointu")
+
+    elif content == '!shop' or content == '!phanshop':
+        await message.channel.send('Caiming suun')
+
+    
+
+        # await print_leaderboard(message.channel)
+
                        
         #     history = [msg async for msg in message.channel.history(limit=200)]
         
