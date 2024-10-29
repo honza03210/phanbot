@@ -292,7 +292,7 @@ async def on_message(message):
         if '?' in str(content):
             await message.channel.send("Sice ti neporadim, aaale tady mas macicku :)")
             await cat(message.channel)
-            if randint(0, 9) == 5:
+            if randint(0, 3) == 1:
                 await phanbomb("PhanTom napsal '?' a stesti nebylo na jedho strane")
         elif 'nechápu' in str(content) or 'nechapu' in str(content):
             if randint(1, 4) == 3:
