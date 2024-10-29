@@ -140,8 +140,10 @@ async def on_raw_reaction_add(payload):
     #         if reaction_user == user:
     #             user_react_count += 1
     #             break  # Stop counting after finding the user for this reaction
-    # if user_react_count > 3:
-    #     return
+    if user_react_count > 3:
+        print("hahahaaa")
+        return
+    print("nope")
     reactions_data[payload.user_id][payload.emoji.id] += 1
     reactions_data[payload.user_id]['total'] += 1
     if reactions_data[payload.user_id]['total'] > reactions_data[payload.user_id].get('highest', 0):
