@@ -211,32 +211,32 @@ async def print_leaderboard(channel):
 
 
 
-# async def print_leaderboard(channel):
-#     tuples = []
-#     for user in reactions_data:
-#         tuples.append((reactions_data[user]['total'], user, reactions_data[user].get('phanbomb', 0), reactions_data[user]['phanpoints']))
-#     tuples.sort(reverse=True)
-#     # mesg = "----PhanBoard----\nporadi. jmeno -> celkem | od posledni PhanBomby\n"
-#     headers = ['Poradi', 'Jmeno', 'Celkem bodu', 'Od posledni PhanBomby']
-#     data = []
-#     for i, (total, user, phanbomb, phanpoints) in enumerate(tuples):
-#         this = []
-#         usr = await client.fetch_user(user)
-#         this.append(f"{i + 1}.")
-#         this.append(usr.display_name)
-#         this.append(str(total))
-#         this.append(str(total - phanbomb))
-#         data.append(this.copy())
-#         # this += f"{i + 1}. {usr.display_name} -> {total} | {phanbomb}\n"
-#     mesg = '```'
-#     mesg += tabulate(data, headers)
-#     mesg += '```'
+async def print_leaderboard_legacy(channel):
+    tuples = []
+    for user in reactions_data:
+        tuples.append((reactions_data[user]['total'], user, reactions_data[user].get('phanbomb', 0), reactions_data[user]['phanpoints']))
+    tuples.sort(reverse=True)
+    # mesg = "----PhanBoard----\nporadi. jmeno -> celkem | od posledni PhanBomby\n"
+    headers = ['Poradi', 'Jmeno', 'Celkem bodu', 'Od posledni PhanBomby']
+    data = []
+    for i, (total, user, phanbomb, phanpoints) in enumerate(tuples):
+        this = []
+        usr = await client.fetch_user(user)
+        this.append(f"{i + 1}.")
+        this.append(usr.display_name)
+        this.append(str(total))
+        this.append(str(total - phanbomb))
+        data.append(this.copy())
+        # this += f"{i + 1}. {usr.display_name} -> {total} | {phanbomb}\n"
+    mesg = '```'
+    mesg += tabulate(data, headers)
+    mesg += '```'
 
-#     if mesg == '':
-#         await channel.send("No data :(")
-#         return
+    if mesg == '':
+        await channel.send("No data :(")
+        return
 
-#     await channel.send(mesg)
+    await channel.send(mesg)
 
 async def phanbomb(trigger: str = 'idk'):
     tuples = []
@@ -332,7 +332,8 @@ async def on_message(message):
     
     if first_word == "!phantop" or first_word == '!top' or first_word == 'top':
         await print_leaderboard(message.channel)
-        return
+    elif first_word == '!top_legacy':
+        await print_leaderboard_legacy()
     elif first_word == '!help':
         await message.channel.send('!points\n!shop [buy {item}| list]\n!top\n')
     
