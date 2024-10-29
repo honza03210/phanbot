@@ -131,7 +131,7 @@ async def on_raw_reaction_add(payload):
     user_react_count = 0
     for reaction in message.reactions:
         users = reaction.users()
-        for us in users:
+        async for us in users:
             if us == user:
                 user_react_count += 1
                 break
