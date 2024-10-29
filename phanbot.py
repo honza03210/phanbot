@@ -335,23 +335,20 @@ async def on_message(message):
         await message.channel.send(f"{message.author.display_name}, mas {reactions_data[message.author.id]['phanpoints']} phanpointu")
 
     elif first_word == '!shop' or first_word == '!phanshop':
-        if len(parsed) == 1:
+        if len(parsed) == 2 and parsed[1] == 'list':
+            msg = 'Nabidka v obchode:\n'
+            for offer, price in SHOP_OFFERS.items():
+                msg += f"{offer} za {price} PhanPoints"
+            await message.channel.send(msg)
+        elif len(parsed) == 3 and parsed[1] == 'buy' and parsed[2] in SHOP_OFFERS.keys():
+            if reactions_data[message.author.id]['phanpoints'] < SHOP_OFFERS[parsed[2]]:
+                return
+            reactions_data[message.author.id]['phanpoints'] -= SHOP_OFFERS[parsed[2]]
+            trusted_channel = await client.fetch_channel(TRUSTED_CHANNEL)
+            if trusted_channel:
+                await trusted_channel.send(f"{message.author.id}, {message.author.display_name}, just bought {parsed[2]}")
+        else:
             await message.channel.send('pouzij "!shop list" pro vypis nabidky, nebo "!shop buy NAZEV_POLOZKY" pro nakup v obchode')
-        elif len(parsed) == 2:
-            if parsed[1] == 'list':
-                msg = 'Nabidka v obchode:\n'
-                for offer, price in SHOP_OFFERS.items():
-                    msg += f"{offer} za {price} PhanPoints"
-                await message.channel.send(msg)
-        elif len(parsed) == 3:
-            if parsed[1] == 'buy' and parsed[2] in SHOP_OFFERS.keys():
-                if reactions_data[message.author.id]['phanpoints'] < SHOP_OFFERS[parsed[2]]:
-                    return
-                reactions_data[message.author.id]['phanpoints'] -= SHOP_OFFERS[parsed[2]]
-                trusted_channel = await client.fetch_channel(TRUSTED_CHANNEL)
-                if trusted_channel:
-                    await trusted_channel.send(f"{message.author.id}, {message.author.display_name}, just bought {parsed[2]}")
-
 
 
     
