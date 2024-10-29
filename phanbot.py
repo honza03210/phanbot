@@ -130,7 +130,7 @@ async def on_raw_reaction_add(payload):
     message = await channel.fetch_message(payload.message_id)
     user_react_count = 0
     for reaction in message.reactions:
-        users = await reaction.users().flatten()
+        users = (await reaction.users()).flatten()
         if payload.user_id in users:
             user_react_count += 1
     if user_react_count > 3:
