@@ -233,7 +233,7 @@ async def print_leaderboard(channel):
 
 #     await channel.send(mesg)
 
-async def phanbomb(trigger: str):
+async def phanbomb(trigger: str = 'idk'):
     tuples = []
     for user_id in reactions_data:
         tuples.append((reactions_data[user_id].get('total', 0) - reactions_data[user_id].get('phanbomb', 0), user_id, reactions_data[user_id]['phanpoints']))
