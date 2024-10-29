@@ -238,15 +238,15 @@ async def phanbomb(trigger: str):
     for user_id in reactions_data:
         tuples.append((reactions_data[user_id].get('total', 0) - reactions_data[user_id].get('phanbomb', 0), user_id, reactions_data[user_id]['phanpoints']))
     tuples.sort(reverse=True)
-    reward = len(tuples)
+    reward = len(tuples) // 2
     users = []
     for i, (since_last, user_id, phanpoints) in enumerate(tuples):
         user = await client.fetch_user(user_id)
         users.append(user)
-        reactions_data[user_id]['phanpoints'] += max(0, reward)
-        reactions_data[user_id]['phanbomb'] += since_last
-        await user.send(f"PhanBomba vybuchlaaa, protoze {trigger}.\n Umistil/a ses na {i + 1}. miste z {len(tuples)}, od posledni PhanBomby jsi dal/a PhanTomovi {since_last} reakci.\n Dostavas tedy +{reward} PhanPointu (ted mas {phanpoints + reward})\nTakto ted vypada PhanBoard:")
-        await print_leaderboard(user)
+        # reactions_data[user_id]['phanpoints'] += max(0, reward)
+        reactions_data[user_id]['phanbomb'] = reactions_data[user_id].get('phanbomb', 0) + since_last
+        # await user.send(f"PhanBomba vybuchlaaa, protoze {trigger}.\n Umistil/a ses na {i + 1}. miste z {len(tuples)}, od posledni PhanBomby jsi dal/a PhanTomovi {since_last} reakci.\n Dostavas tedy +{reward} PhanPointu (ted mas {phanpoints + reward})\nTakto ted vypada PhanBoard:")
+        # await print_leaderboard(user)
         reward -= 1
     save_reactions()
 
@@ -257,6 +257,8 @@ async def phanbomb(trigger: str):
 async def on_message(message):
     global bot_id
     content = message.content.lower()
+    if content == '':
+        return
     parsed = content.split() 
     first_word = parsed[0]
     # if message.author.id == TARGET_USER_ID:
