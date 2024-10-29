@@ -297,7 +297,6 @@ async def on_message(message):
                 exit(0)
             elif first_word == "help":
                 await message.channel.send("reboot\npull\nupdate\nping\n")
-            return
 
     if message.author.id == TARGET_USER_ID:
         # await message.add_reaction('<:phannerd:1208806780818432063>')
