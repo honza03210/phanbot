@@ -255,6 +255,8 @@ async def phanbomb(trigger: str = 'idk'):
 
 @client.event
 async def on_message(message):
+    if message.author.bot:
+        return
     global bot_id
     content = message.content.lower()
     if content == '':
