@@ -20,10 +20,10 @@ from random import randint
 CONFIG_FILE = 'config.json'
 REACTIONS_FILE = 'reactions.json'
 
-SHOP_OFFERS = {'phannerd': 12,
-               'phanmoon': 9,
-               'phanspinner': 25,
-               'susenka nebo ekvivalent': 6}
+SHOP_OFFERS = {'phannerd': 32,
+               'phanmoon': 20,
+               'phanspinner': 45,
+               'susenka nebo ekvivalent': 12}
 
 os.system("git pull main --no-edit")
 
@@ -336,7 +336,10 @@ async def on_message(message):
             await message.channel.send('Caiming suun')
         elif len(parsed) == 2:
             if parsed[1] == 'list':
-                await message.channel.send('Nabidka v obchode:\n' + '\n'.join(SHOP_OFFERS.keys()))
+                msg = 'Nabidka v obchode:\n'
+                for offer, price in SHOP_OFFERS.items():
+                    msg += f"{offer} za {price} PhanPoints"
+                await message.channel.send(msg)
         elif len(parsed) == 3:
             if parsed[1] == 'buy' and parsed[2] in SHOP_OFFERS.keys():
                 if reactions_data[message.author.id]['phanpoints'] < SHOP_OFFERS[parsed[2]]:
