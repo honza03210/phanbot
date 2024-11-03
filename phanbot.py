@@ -16,6 +16,7 @@ import requests
 from tabulate import tabulate
 from PIL import Image, ImageDraw, ImageFont
 from random import randint
+import re
 
 CONFIG_FILE = 'config.json'
 REACTIONS_FILE = 'reactions.json'
@@ -67,6 +68,17 @@ last_payload = None
 if len(argv) > 1:
     bot_id = int(argv[1])
 
+def find_number_after_substring(text, substring):
+    # Create a regex pattern that matches the substring, followed by any whitespace and a number
+    pattern = re.compile(re.escape(substring) + r'\s*(\d+)')
+    
+    # Search for the pattern in the text
+    match = pattern.search(text)
+    
+    # If a match is found, return the number; otherwise, return None
+    if match:
+        return int(match.group(1))
+    return None
 
 def save_reactions():
     with open(REACTIONS_FILE, 'w+') as file:
@@ -242,6 +254,24 @@ async def print_leaderboard_legacy(channel):
 
     await channel.send(mesg)
 
+async def phanbomb_recover():
+    trus = await client.fetch_user(TRUSTED_USER)
+
+    for user_id in reactions_data:
+        high = 0
+        user = await client.fetch_user(user_id)
+        channel = user.dm_channel
+        async for message in channel.history(limit=200):
+            if message.author.bot:
+                num = find_number_after_substring(message.content, "(ted mas ")
+                if num != None:
+                    high = max(num, high)
+        reactions_data[user_id]['phanpoints'] = high
+        await trus.send(f"{user_id} had {high}\n") 
+    save_reactions()
+
+
+
 async def phanbomb(trigger: str = 'idk'):
     tuples = []
     for user_id in reactions_data:
@@ -292,6 +322,9 @@ async def on_message(message):
                 os.system("sudo /sbin/reboot")
             elif first_word == "bomb":
                 await phanbomb()
+
+            elif first_word == "recover":
+                await phanbomb_recover()
             elif first_word == "give":
                 reactions_data[TRUSTED_USER]['phanpoints'] += int(parsed[1])
             elif first_word == "pull":
