@@ -285,7 +285,7 @@ async def phanbomb(trigger: str = 'idk'):
         user = await client.fetch_user(user_id)
         actual_reward = max(reward, 0) if since_last != 0 else 0
         users.append(user)
-        reactions_data[user_id]['phanpoints'] = actual_reward + reactions_data[user_id].get('phanpoints', 0)
+        # reactions_data[user_id]['phanpoints'] = actual_reward + reactions_data[user_id].get('phanpoints', 0)
         reactions_data[user_id]['phanbomb'] = reactions_data[user_id].get('total', 0)
         # await user.send(f"PhanBomba vybuchlaaa, protoze {trigger}.\n Umistil/a ses na {i + 1}. miste z {len(tuples)}, od posledni PhanBomby jsi dal/a PhanTomovi {since_last} reakci.\n Dostavas tedy +{max(0, reward)} PhanPointu (ted mas {phanpoints + reward})\nTakto ted vypada PhanBoard:")
         # await print_leaderboard(user)
