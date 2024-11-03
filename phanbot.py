@@ -261,10 +261,12 @@ async def phanbomb_recover():
         high = 0
         user = await client.fetch_user(user_id)
         channel = user.dm_channel
+        if channel is None:
+            channel = await user.create_dm()
         async for message in channel.history(limit=200):
             if message.author.bot:
                 num = find_number_after_substring(message.content, "(ted mas ")
-                if num != None:
+                if num is not None:
                     high = max(num, high)
         reactions_data[user_id]['phanpoints'] = high
         await trus.send(f"{user_id} had {high}\n") 
