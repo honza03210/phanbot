@@ -230,7 +230,7 @@ async def print_leaderboard(channel):
 async def print_leaderboard_legacy(channel):
     tuples = []
     for user in reactions_data:
-        tuples.append((reactions_data[user]['total'], user, reactions_data[user].get('phanbomb', 0), reactions_data[user]['phanpoints']))
+        tuples.append((reactions_data[user].get('total','?'), user, reactions_data[user].get('phanbomb', '?'), reactions_data[user].get('phanpoints','?')))
     tuples.sort(reverse=True)
     # mesg = "----PhanBoard----\nporadi. jmeno -> celkem | od posledni PhanBomby\n"
     headers = ['Poradi', 'Jmeno', 'Celkem bodu', 'Od posledni PhanBomby']
@@ -277,12 +277,15 @@ async def phanbomb_recover():
 async def phanbomb(trigger: str = 'idk'):
     tuples = []
     for user_id in reactions_data:
-        tuples.append((reactions_data[user_id].get('total', 0) - reactions_data[user_id].get('phanbomb', 0), user_id, reactions_data[user_id]['phanpoints']))
+        tuples.append((reactions_data[user_id].get('total', 0) - reactions_data[user_id].get('phanbomb', 0), user_id, reactions_data[user_id].get('phanpoints','?')))
     tuples.sort(reverse=True)
     reward = len(tuples) // 2
     users = []
     for i, (since_last, user_id, phanpoints) in enumerate(tuples):
-        user = await client.fetch_user(user_id)
+        try:
+          user = await client.fetch_user(user_id)
+        except:
+          break
         actual_reward = max(reward, 0) if since_last != 0 else 0
         users.append(user)
         reactions_data[user_id]['phanpoints'] = actual_reward + reactions_data[user_id].get('phanpoints', 0)
