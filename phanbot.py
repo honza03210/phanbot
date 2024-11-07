@@ -288,9 +288,9 @@ async def phanbomb(trigger: str = 'idk'):
         reactions_data[user_id]['phanbomb'] = reactions_data[user_id].get('total', 0)
         reward -= 1
         try:
-          user = await client.fetch_user(user_id)
-          await user.send(f"PhanBomba vybuchlaaa, protoze {trigger}.\n Umistil/a ses na {i + 1}. miste z {len(tuples)}, od posledni PhanBomby jsi dal/a PhanTomovi {since_last} reakci.\n Dostavas tedy +{actual_reward} PhanPointu (ted mas {phanpoints + actual_reward})\nTakto ted vypada PhanBoard:")
-          await print_leaderboard(user)
+            user = await client.fetch_user(user_id)
+            await user.send(f"PhanBomba vybuchlaaa, protoze {trigger}.\n Umistil/a ses na {i + 1}. miste z {len(tuples)}, od posledni PhanBomby jsi dal/a PhanTomovi {since_last} reakci.\n Dostavas tedy +{actual_reward} PhanPointu (ted mas {phanpoints + actual_reward})\nTakto ted vypada PhanBoard:")
+            await print_leaderboard(user)
         except:
           continue
         
@@ -429,7 +429,7 @@ async def on_message(message):
 
 while True:
     try:
-      client.run(TOKEN)
-      sleep(10)
+        client.run(TOKEN)
+        sleep(10)
     except:
-      continue
+        continue
