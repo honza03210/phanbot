@@ -346,12 +346,12 @@ async def on_message(message):
               "message": message,
               "user_id": message.author.id,
               "args": parsed[1:] if len(parsed) > 1 else []}
-        command_handlers_list[first_word](params)
+        await command_handlers_list[first_word](params)
 
 
     # phantoms keywords that can trigger send_cat and phanbomb 
     if message.author.id == config.target_user_id:
-        phanwords_handler(message, content)
+        await phanwords_handler(message, content)
 
 
 
@@ -383,5 +383,8 @@ command_handlers_list = {'!reboot': reboot,
                          '!shop': shop}
 
 while True:
-    client.run(config.discord_token)
+    try:
+        client.run(config.discord_token)
+    except:
+        continue
     sleep(10)
