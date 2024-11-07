@@ -282,17 +282,18 @@ async def phanbomb(trigger: str = 'idk'):
     reward = len(tuples) // 2
     users = []
     for i, (since_last, user_id, phanpoints) in enumerate(tuples):
-        try:
-          user = await client.fetch_user(user_id)
-        except:
-          break
         actual_reward = max(reward, 0) if since_last != 0 else 0
         users.append(user)
         reactions_data[user_id]['phanpoints'] = actual_reward + reactions_data[user_id].get('phanpoints', 0)
         reactions_data[user_id]['phanbomb'] = reactions_data[user_id].get('total', 0)
-        await user.send(f"PhanBomba vybuchlaaa, protoze {trigger}.\n Umistil/a ses na {i + 1}. miste z {len(tuples)}, od posledni PhanBomby jsi dal/a PhanTomovi {since_last} reakci.\n Dostavas tedy +{actual_reward} PhanPointu (ted mas {phanpoints + actual_reward})\nTakto ted vypada PhanBoard:")
-        await print_leaderboard(user)
         reward -= 1
+        try:
+          user = await client.fetch_user(user_id)
+          await user.send(f"PhanBomba vybuchlaaa, protoze {trigger}.\n Umistil/a ses na {i + 1}. miste z {len(tuples)}, od posledni PhanBomby jsi dal/a PhanTomovi {since_last} reakci.\n Dostavas tedy +{actual_reward} PhanPointu (ted mas {phanpoints + actual_reward})\nTakto ted vypada PhanBoard:")
+          await print_leaderboard(user)
+        except:
+          continue
+        
     save_reactions()
 
 
