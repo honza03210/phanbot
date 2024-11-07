@@ -297,7 +297,16 @@ async def phanbomb(trigger: str = 'idk'):
     save_reactions()
 
 
-
+async def rewrite_reaction_data_file():
+    new_data = {}
+    for user_id in reactions_data.keys:
+        new_data[user_id] = {'total': reactions_data[user_id].get('total', 0),
+                             'points': reactions_data[user_id].get('phanbomb', 0),
+                             'phanbomb': reactions_data[user_id].get('phanbomb', 0)}
+    with open('new_reaction_data.json', "w+") as file:
+        dump(new_data, file)
+        
+            
 
 @client.event
 async def on_message(message):
@@ -346,6 +355,8 @@ async def on_message(message):
             elif first_word == "kill":
                 await client.close()
                 exit(0)
+            elif first_word == "!rewrite":
+                await rewrite_reaction_data_file()
             elif first_word == "help":
                 await message.channel.send("reboot\npull\nupdate\nping\n")
 
