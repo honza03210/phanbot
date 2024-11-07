@@ -2,434 +2,386 @@
 ### abandon hope all ye who read further ###
 ############################################
 
+
+import file_utils
+import image_utils
+
 import discord
-import string
-from time import sleep, time
-from discord.ext import commands, tasks
-from datetime import datetime, timezone
-from json import load, dump
+from time import sleep
+from discord.ext import commands
 import os
 import io
-from sys import argv
-from collections import defaultdict
-import requests
 from tabulate import tabulate
-from PIL import Image, ImageDraw, ImageFont
 from random import randint
-import re
+
+
+SHOP_OFFERS: dict[str: int] =  {'phannerd': 32,
+                                'phanmoon': 20,
+                                'phanspinner': 45,
+                                'susenka nebo ekvivalent': 12}
+
 
 CONFIG_FILE = 'config.json'
+config = file_utils.Config()
+
 REACTIONS_FILE = 'reactions.json'
+reaction_data = file_utils.ReactionData(REACTIONS_FILE)
 
-SHOP_OFFERS = {'phannerd': 32,
-               'phanmoon': 20,
-               'phanspinner': 45,
-               'susenka nebo ekvivalent': 12}
+# for oritentation in reaction_data.data: dict[user_id: list[REACTIONS, PHANPOINTS, PHANBOMB]]
+REACTIONS = 0
+PHANPOINTS = 1
+PHANBOMB = 2
 
-os.system("git pull main --no-edit")
-
-with open(CONFIG_FILE, 'r') as cfg:
-  # Deserialize the JSON data (essentially turning it into a Python dictionary object so we can use it in our code) 
-  config = load(cfg) 
-
-reactions_data = defaultdict(lambda: defaultdict(int))
-try:
-    with open(REACTIONS_FILE, 'r') as file:
-        data = load(file)
-        reactions_data = defaultdict(
-                lambda: defaultdict(int),
-                {int(user): defaultdict(int, {emoji: count for emoji, count in emojis.items()}) for user, emojis in data.items()}
-            )
-except OSError:
-    pass
+# constants for custom error handling
+DATA_RECOVERY = -1
+DATA_SAVING = -2
+REACTION_READ = -3
+PHANBOMB_USER_FETCH = -4
 
 
-# Replace 'your_bot_token_here' with your bot token
-TOKEN = config['phanbot-token']
+##################################################################################################
+#                                   Bot setup and error handler                                  #
+##################################################################################################
 
-# Replace 'user_id_here' with the ID of the user you want the bot to react to
-TARGET_USER_ID = int(config['phantom-id'])  # Replace with the user's Discord ID
-TARGET_CHANNEL_ID = int(config['help-pls-id'])
-TRUSTED_USER = int(config['trusted-user-id'])
-TRUSTED_CHANNEL = int(config['trusted-user-channel'])
-CAT_KEY = config['cat_key']
-
-# Set up the bot
-intents = discord.Intents.default()
-intents.messages = True
-intents.reactions = True
-intents.message_content = True
-intents.dm_messages = True
-client = commands.Bot(command_prefix="!", intents=intents)
-bot_id = 0
-to_terminate = False
-last_payload = None
-
-if len(argv) > 1:
-    bot_id = int(argv[1])
-
-def find_number_after_substring(text, substring):
-    # Create a regex pattern that matches the substring, followed by any whitespace and a number
-    pattern = re.compile(re.escape(substring) + r'\s*(\d+)')
+async def error_handler(error_code: int) -> None:
+    global config
+    try:
+        admin = await client.fetch_user(config.admin_id)
     
-    # Search for the pattern in the text
-    match = pattern.search(text)
-    
-    # If a match is found, return the number; otherwise, return None
-    if match:
-        return int(match.group(1))
-    return None
+    # todo - log fails into some file
+    except discord.HTTPException:
+        return
+    except discord.NotFound:
+        return
 
-def save_reactions():
-    with open(REACTIONS_FILE, 'w+') as file:
-        dump(reactions_data, file)
+    if error_code == DATA_RECOVERY:
+        await admin.send("Data recovery failed")
+    elif error_code == DATA_SAVING:
+        await admin.send("Data saving failed")
+    elif error_code == REACTION_READ:
+        await admin.send("Reaction reading failed")
+    elif error_code == PHANBOMB_USER_FETCH:
+        await admin.send("Fetching user for PhanBomb failed")
+    await admin.send("Spadlo to, asi vítr ne?")
 
-def render_dict_as_table(table, rows):
 
-    # Create a new image with a white background
-    img_width, img_height = 730, 45 + 22 * rows
-    background_color = (0, 0, 0)  # White
-    table_color = (255, 255, 255)  # Black
-    font_path = "/usr/share/fonts/truetype/liberation2/LiberationMono-Bold.ttf"
+def set_intents():
+    intents = discord.Intents.default()
+    intents.messages = True
+    intents.reactions = True
+    intents.message_content = True
+    intents.dm_messages = True
+    intents.dm_reactions = True
+    return intents
 
-    font_size = 16
-    line_spacing = 4
-    font = ImageFont.truetype(font_path, font_size)
-    line_height = font.getsize("hg")[1] + line_spacing
-    rows = table.split("\n")
 
-    image = Image.new("RGB", (img_width, img_height), background_color)
-    draw = ImageDraw.Draw(image)
-    
-    # Render the table onto the image
-    y = 5
-    for row in rows:
-        draw.text((5, y), row, font=font, fill=table_color)
-        y += line_height
-    return image
+client = commands.Bot(command_prefix="!", intents=set_intents())
+
 
 @client.event
 async def on_ready():
-    global bot_id
+    global config
     print(f'Logged in as {client.user.name}')
-        # Send a greeting message to the trusted channel when the bot starts
-    trusted_channel = await client.fetch_channel(TRUSTED_CHANNEL)
-    if trusted_channel:
-        await trusted_channel.send(f"Nazdar! PhanBot {str(bot_id)} ready {datetime.now().strftime('%d/%m/%Y, %H:%M:%S')}")
+
+    # Send a greeting message to admin when the bot starts
+    admin = await client.fetch_user(config.admin_id)
+    if admin is not None:
+        await admin.send("Hi, I'm ready to bully :)")
 
 
-async def cat(ctx):
-    url = "https://api.thecatapi.com/v1/images/search"
-    headers = {"x-api-key": CAT_KEY}
-    response = requests.get(url, headers=headers)
 
-    if response.status_code == 200:
-        cat_url = response.json()[0]["url"]
-        await ctx.send("Tady mas kocicku <3")
-        await ctx.send(cat_url)
+##################################################################################################
+#                                   Event handlers                                               #
+##################################################################################################
+
+
+# Function return number of rections of user on message
+def reaction_count(msg, user):
+    count = 0
+    for reaction in msg.reactions:
+        if user in reaction.users():
+            count += 1
+    return count
+
+
+
+
+last_payload = None
+
+@client.event
+async def on_raw_reaction_add(reaction):
+    global reaction_data, last_payload
+
+    # Ignore reactions from bot and duplicates
+    if reaction.user_id == client.user.id:
+        return
+    if last_payload != None and reaction == last_payload:
+        return
+    last_payload = reaction
+
+    # Ignore reactions from the target user (Phantom)
+    if reaction.user_id == config.target_user_id:
+        return
+
+
+    msg = await client.get_channel(reaction.channel_id).fetch_message(reaction.message_id)
+    reaction_author = await client.fetch_user(reaction.user_id)
+
+    if msg.author.id != config.target_user_id:
+        return
+
+    count = reaction_count
+    if count > 3:
+        if count == 4:
+            await reaction_author.send("Do skóre se ti započítávají pouze první tři reakce na jednu zprávu") 
+        return
+
+    # updating data in reactions_data
+    reaction_data.change_reaction_count(reaction.user_id, 1)
+
+    if reaction_data.data[reaction.user_id][REACTIONS] % 10 == 0:
+        await image_utils.send_cat(reaction_author.dm_channel) # can fail, dont care
+
+    await reaction_data.save_data() # can fail, might be a problem
 
 
 @client.event
-async def on_raw_reaction_add(payload):
-    if last_payload != None and payload == last_payload:
+async def on_raw_reaction_remove(reaction):
+    global reaction_data, last_payload
+
+    # Ignore reactions from bot and duplicates
+    if reaction.user_id == client.user.id:
         return
-    if payload.message_author_id != TARGET_USER_ID:
+    if last_payload != None and reaction == last_payload:
         return
-    user = await client.fetch_user(payload.user_id)
-    if user.bot:
+    last_payload = reaction
+
+    # Ignore reactions from the target user (Phantom)
+    if reaction.user_id == config.target_user_id:
         return
 
-    ##### TODO 
-    # channel = await client.fetch_channel(payload.channel_id)
-    # message = await channel.fetch_message(payload.message_id)
-    # user_react_count = 0
-    # for reaction in message.reactions:
-    #     users = reaction.users()
-    #     async for us in users:
-    #         if us.id == user.id:
-    #             user_react_count += 1
-    #             break
-    # #     # Iterate over each user who reacted
-    # #     async for reaction_user in reaction.users():
-    # #         if reaction_user == user:
-    # #             user_react_count += 1
-    # #             break  # Stop counting after finding the user for this reaction
-    # if user_react_count > 3:
-    #     print("hahahaaa")
-    #     return
-    # print("nope")
-    reactions_data[payload.user_id][payload.emoji.id] += 1
-    reactions_data[payload.user_id]['total'] += 1
-    if reactions_data[payload.user_id]['total'] > reactions_data[payload.user_id].get('highest', 0):
-        reactions_data[payload.user_id]['highest'] = reactions_data[payload.user_id]['total']
-        num = reactions_data[payload.user_id]['total']
-        first = True
 
-        if reactions_data[payload.user_id]['total'] == 1:
-            await user.send(f"Eeeej, nice! Tohle je tvoje prvni reakce na PhanToma. Reaguj vic a prekonej vsechny ostatni ve PhanBoardu :D\npomoci !phantop si PhanBoard zobrazis ;-)")
+    msg = await client.get_channel(reaction.channel_id).fetch_message(reaction.message_id)
+    user = await client.fetch_user(reaction.user_id)
+    msg_author = await client.fetch_user(msg.author.id)
 
-        while num > 0:
-            if num % 10 == 0:
-                if first:
-                    await user.send(f"Ooooo, cg, {num} reakci si zaslouzi odmenu :D")
-                first = False
-                await cat(user)
-                num //= 10
-            else:
-                break
-    
-    save_reactions()
-
-
-@client.event
-async def on_raw_reaction_remove(payload):
-    global last_payload
-    if last_payload != None and payload == last_payload:
+    if msg_author.id != config.target_user_id:
         return
-    print(payload.channel_id)
-    channel = await client.fetch_channel(payload.channel_id)
-    print(payload.message_id)
-    msg = await channel.fetch_message(payload.message_id)
-    print(msg.author.id)
-    if msg.author.id != TARGET_USER_ID:
-        return
-    user = await client.fetch_user(payload.user_id)
-    if user.bot:
-        return
-    reactions_data[payload.user_id][payload.emoji.id] -= 1
-    reactions_data[payload.user_id]['total'] -= 1
-    save_reactions()
 
-async def print_leaderboard(channel):
+    if reaction_count(msg, user) >= 3:
+        return
+
+    # updating data in reactions_data
+    reaction_data.change_reaction_count(reaction.user_id, 1)
+
+    await reaction_data.save_data()
+
+
+
+
+
+##################################################################################################
+#                                   Command handlers                                             #
+##################################################################################################
+
+async def print_leaderboard(params: dict):
     tuples = []
-    for user in reactions_data:
-        tuples.append((reactions_data[user]['total'], user, reactions_data[user].get('phanbomb', 0), reactions_data[user]['phanpoints']))
+    for user_id in reaction_data.data:
+        tuples.append((reaction_data.data[user_id][REACTIONS], user_id, reaction_data.data[user_id][PHANBOMB]))
+
     tuples.sort(reverse=True)
-    # mesg = "----PhanBoard----\nporadi. jmeno -> celkem | od posledni PhanBomby\n"
+
     headers = ['Poradi', 'Jmeno', 'Celkem bodu', 'Od posledni PhanBomby']
     data = []
-    for i, (total, user, phanbomb, phanpoints) in enumerate(tuples):
+
+    for i, (total, user_id, since_last_phanbomb) in enumerate(tuples):
         this = []
-        usr = await client.fetch_user(user)
+        user = await client.fetch_user(user_id)
         this.append(f"{i + 1}.")
-        this.append(usr.display_name)
+        this.append(user.display_name if user is not None else str(user_id)) # to check - lazy eval??
         this.append(str(total))
-        this.append(str(total - phanbomb))
+        this.append(str(since_last_phanbomb))
         data.append(this.copy())
-        # this += f"{i + 1}. {usr.display_name} -> {total} | {phanbomb}\n"
+
     table = tabulate(data, headers)
-    image = render_dict_as_table(table, len(tuples))
+
+    image = image_utils.render_as_pic(table, len(tuples))
 
     with io.BytesIO() as image_binary:
         image.save(image_binary, 'PNG')
         image_binary.seek(0)
-        await channel.send(file=discord.File(fp=image_binary, filename='image.png'))
+        await params["message"].channel.send(file=discord.File(fp=image_binary, filename='image.png'))
 
 
 
-async def print_leaderboard_legacy(channel):
-    tuples = []
-    for user in reactions_data:
-        tuples.append((reactions_data[user].get('total','?'), user, reactions_data[user].get('phanbomb', '?'), reactions_data[user].get('phanpoints','?')))
-    tuples.sort(reverse=True)
-    # mesg = "----PhanBoard----\nporadi. jmeno -> celkem | od posledni PhanBomby\n"
-    headers = ['Poradi', 'Jmeno', 'Celkem bodu', 'Od posledni PhanBomby']
-    data = []
-    for i, (total, user, phanbomb, phanpoints) in enumerate(tuples):
-        this = []
-        usr = await client.fetch_user(user)
-        this.append(f"{i + 1}.")
-        this.append(usr.display_name)
-        this.append(str(total))
-        this.append(str(total - phanbomb))
-        data.append(this.copy())
-        # this += f"{i + 1}. {usr.display_name} -> {total} | {phanbomb}\n"
-    mesg = '```'
-    mesg += tabulate(data, headers)
-    mesg += '```'
+async def phanbomb(trigger: str):
 
-    if mesg == '':
-        await channel.send("No data :(")
-        return
+    points_per_user = []
 
-    await channel.send(mesg)
+    for user_id, data in reaction_data.data.items():
+        points_per_user.append((data[PHANBOMB], user_id))
+    points_per_user.sort(reverse=True)
 
-async def phanbomb_recover():
-    trus = await client.fetch_user(TRUSTED_USER)
+    for index, (points, user_id) in enumerate(points_per_user):
 
-    for user_id in reactions_data:
-        high = 0
-        user = await client.fetch_user(user_id)
-        channel = user.dm_channel
-        if channel is None:
-            channel = await user.create_dm()
-        async for message in channel.history(limit=200):
-            if message.author.bot:
-                num = find_number_after_substring(message.content, "(ted mas ")
-                if num is not None:
-                    high = max(num, high)
-        reactions_data[user_id]['phanpoints'] = high
-        await trus.send(f"{user_id} had {high}\n") 
-    save_reactions()
+        reaction_data.data[user_id][PHANPOINTS] += len(points_per_user) - index
+        reaction_data.data[user_id][PHANBOMB] = 0
 
-
-
-async def phanbomb(trigger: str = 'idk'):
-    tuples = []
-    for user_id in reactions_data:
-        tuples.append((reactions_data[user_id].get('total', 0) - reactions_data[user_id].get('phanbomb', 0), user_id, reactions_data[user_id].get('phanpoints','?')))
-    tuples.sort(reverse=True)
-    reward = len(tuples) // 2
-    users = []
-    for i, (since_last, user_id, phanpoints) in enumerate(tuples):
-        actual_reward = max(reward, 0) if since_last != 0 else 0
-        users.append(user)
-        reactions_data[user_id]['phanpoints'] = actual_reward + reactions_data[user_id].get('phanpoints', 0)
-        reactions_data[user_id]['phanbomb'] = reactions_data[user_id].get('total', 0)
-        reward -= 1
         try:
             user = await client.fetch_user(user_id)
-            await user.send(f"PhanBomba vybuchlaaa, protoze {trigger}.\n Umistil/a ses na {i + 1}. miste z {len(tuples)}, od posledni PhanBomby jsi dal/a PhanTomovi {since_last} reakci.\n Dostavas tedy +{actual_reward} PhanPointu (ted mas {phanpoints + actual_reward})\nTakto ted vypada PhanBoard:")
+            await user.send(f"PhanBomba vybuchlaaa, protoze {trigger}. Umistil/a ses na {index + 1}. miste z {len(points_per_user)}, od posledni PhanBomby jsi dal/a PhanTomovi {points} reakci.\n Dostavas tedy +{len(points_per_user) - index} PhanPointu (ted mas {reaction_data.data[user_id][PHANPOINTS]})\nTakto ted vypada PhanBoard:")
             await print_leaderboard(user)
-        except:
-          continue
-        
-    save_reactions()
+
+        except discord.errors.NotFound:
+            error_handler(PHANBOMB_USER_FETCH)
+            continue
+
+    await reaction_data.save_data()
 
 
+async def reboot(params: dict):
+    if not params["is_admin"]:
+        return
+    await params["message"].channel.send("Rebooting :)")
+    await client.close()
+    exit(0)
+    os.system("sudo /sbin/reboot")
+    
+
+async def call_phanbomb(params: dict):
+    if not params["is_admin"]:
+        return
+    await phanbomb("idk, lol")
+
+
+async def admin_gib_points(params: dict):
+    if not params["is_admin"]:
+        return
+    try:
+        reaction_data[config.admin_id][PHANPOINTS] += int(params['args'][1])
+    except TypeError:
+        error_handler()
+        return
+    except IndexError:
+        error_handler()
+        return
+    
+
+async def update_bot(params: dict):
+    if not params["is_admin"]:
+        return
+    os.system("git pull main --no-edit")
+    os.system("python3 phanbot.py &")
+    exit(0)
+
+
+async def ping_bot(params: dict):
+    await params["message"].channel.send("bot says hi! :D")
+
+async def kill_bot(params: dict):
+    await reaction_data.save_data()
+    await client.close()
+    exit(0)
+
+async def phanwords_handler(message, content):
+    key_words = {'?': (1, "Sice ti neporadim, aaale tady mas macicku :)"),
+                 'nechápu': (2, "Sice se nepostaram o to, abys to chapal, aaale tady mas macicku :)"),
+                 'nechapu': (2, "Sice se nepostaram o to, abys to chapal, aaale tady mas macicku :)"),
+                 'xd': (3, "PhanTom napsal 'xd' xd"),
+                 'pls': (2, "Netreba prosit, tady mas macku :)"),
+                 'prosim': (2, "Netreba prosit, tady mas macku :)")}
+    
+    random_num = randint(1, 9)
+    for keyword, (chance, reply) in key_words:
+        if keyword in content and random_num < chance:
+            await message.channel.send(reply)
+            await image_utils.send_cat(message.channel, False)
+            await phanbomb(f"PhanTom napsal {keyword} a stesti nebylo na jeho strane")
+
+async def print_points(params: dict):
+    await params["message"].channel.send(f"{params["message"].author.display_name}, mas {reaction_data.data[params["message"].author.id][PHANPOINTS]} phanpointu")
+
+
+async def shop(params: dict):
+    if len(params["args"]) == 2 and params["args"][1] == 'list':
+            msg = 'Nabidka v obchode:\n'
+            for offer, price in SHOP_OFFERS.items():
+                msg += f"{offer} za {price} PhanPoints"
+            await params["message"].channel.send(msg)
+    elif len(params["args"]) == 3 and params["args"][1] == 'buy' and params["args"][2] in SHOP_OFFERS.keys():
+        if reaction_data.data[params["message"].author.id][PHANPOINTS] < SHOP_OFFERS[params["args"][2]]:
+            return
+        reaction_data.data[params["message"].author.id][PHANPOINTS] -= SHOP_OFFERS[params["args"][2]]
+        admin = await client.fetch_user(config.admin_id)
+        if admin is not None:
+            await admin.send(f"{params["message"].author.id}, {params["message"].author.display_name}, just bought {params["args"][2]}")
+    else:
+        await params["message"].channel.send('pouzij "!shop list" pro vypis nabidky, nebo "!shop buy NAZEV_POLOZKY" pro nakup v obchode')
+
+
+##################################################################################################
+#    Frankensteins monster of a bot, it's alive, it's not pretty, but it's alive, I think...     #
+##################################################################################################
 
 
 @client.event
 async def on_message(message):
+
     if message.author.bot:
         return
-    global bot_id
+    
     content = message.content.lower()
     if content == '':
         return
+
     parsed = content.split() 
     first_word = parsed[0]
-    # if message.author.id == TARGET_USER_ID:
-    #     await message.channel.send("Insufisnt prava bro")
-    if isinstance(message.channel, discord.DMChannel):
-        if message.author.bot and message.channel.id == TRUSTED_CHANNEL:
-            global to_terminate
-            if to_terminate:
-                await message.channel.send("Bot " + str(bot_id) + " terminated")
-                await client.close()
-                exit(0)
-        # if message.author.id == TARGET_USER_ID:
-        #     message.channel.send("Nice try, Tome xd")
-        #     return
-        if message.author.id == TRUSTED_USER:
-            if first_word == "reboot":
-                await message.channel.send("Rebooting :)")
-                exit(0)
-                os.system("sudo /sbin/reboot")
-            elif first_word == "bomb":
-                await phanbomb()
 
-            elif first_word == "recover":
-                await phanbomb_recover()
-            elif first_word == "give":
-                reactions_data[TRUSTED_USER]['phanpoints'] += int(parsed[1])
-            elif first_word == "pull":
-                await message.channel.send("pulling")
-                os.system("git pull main --no-edit")
-            elif first_word == "update":
-                # this is terrible, but it makes sure that at least one bot is still alive -> can reboot the server
-                to_terminate = True
-                os.system("git pull main --no-edit")
-                os.system("python3 phanbot.py " + str(bot_id + 1) + " &")
-            elif first_word == "ping":
-                await message.channel.send("bot " + str(bot_id) + " says hi! :D")
-            elif first_word == "kill":
-                await client.close()
-                exit(0)
-            elif first_word == "help":
-                await message.channel.send("reboot\npull\nupdate\nping\n")
+   
 
-    if message.author.id == TARGET_USER_ID:
-        # await message.add_reaction('<:phannerd:1208806780818432063>')
-        # await message.add_reaction('<:blahaj:1173983591785578547>')
-        if '?' in str(content):
-            if randint(0, 3) == 1:
-                await message.channel.send("Sice ti neporadim, aaale tady mas macicku :)")
-                await cat(message.channel)
-                await phanbomb("PhanTom napsal '?' a stesti nebylo na jedho strane")
-        elif 'nechápu' in str(content) or 'nechapu' in str(content):
-            if randint(1, 4) == 3:
-                await message.channel.send("Sice se nepostaram o to, abys to chapal, aaale tady mas macicku :)")
-                await cat(message.channel)
-                if randint(0, 5) == 3:
-                    await phanbomb("PhanTom nechape")
-        elif 'xd' in str(content):
-            if randint(1, 4) == 3:
-                await cat(message.channel)
-                if randint(0, 2) == 1:
-                    await phanbomb("PhanTom napsal 'xd' xd")
-        elif 'pls' in str(content) or 'prosim' in str(content):
-            if randint(1, 4) == 3:
-                await message.channel.send("Netreba prosit, tady mas macku :)")
-                await cat(message.channel)
-        return
-    
-    if first_word == "!phantop" or first_word == '!top' or first_word == 'top':
-        await print_leaderboard(message.channel)
-    elif first_word == '!top_legacy':
-        await print_leaderboard_legacy(message.channel)
-    elif first_word == '!help':
-        await message.channel.send('!points\n!shop [buy {item}| list]\n!top\n')
-    
-    elif first_word == '!points' or first_word == '!coins' or first_word == '!phanpoints':
-        await message.channel.send(f"{message.author.display_name}, mas {reactions_data[message.author.id]['phanpoints']} phanpointu")
-
-    elif first_word == '!shop' or first_word == '!phanshop':
-        if len(parsed) == 2 and parsed[1] == 'list':
-            msg = 'Nabidka v obchode:\n'
-            for offer, price in SHOP_OFFERS.items():
-                msg += f"{offer} za {price} PhanPoints"
-            await message.channel.send(msg)
-        elif len(parsed) == 3 and parsed[1] == 'buy' and parsed[2] in SHOP_OFFERS.keys():
-            if reactions_data[message.author.id]['phanpoints'] < SHOP_OFFERS[parsed[2]]:
-                return
-            reactions_data[message.author.id]['phanpoints'] -= SHOP_OFFERS[parsed[2]]
-            trusted_channel = await client.fetch_channel(TRUSTED_CHANNEL)
-            if trusted_channel:
-                await trusted_channel.send(f"{message.author.id}, {message.author.display_name}, just bought {parsed[2]}")
-        else:
-            await message.channel.send('pouzij "!shop list" pro vypis nabidky, nebo "!shop buy NAZEV_POLOZKY" pro nakup v obchode')
+    # commands
+    if first_word in command_handlers_list:
+         # this will be given to every command handler function 
+        params = {"author_id": message.author.id == config.admin_id,
+              "message": message,
+              "user_id": message.author.id,
+              "args": parsed[1:] if len(parsed) > 1 else []}
+        command_handlers_list[first_word](params)
 
 
-    
+    # phantoms keywords that can trigger send_cat and phanbomb 
+    if message.author.id == config.target_user_id:
+        phanwords_handler(message, content)
 
-        # await print_leaderboard(message.channel)
 
-                       
-        #     history = [msg async for msg in message.channel.history(limit=200)]
-        
-        #     # Find the last message by the target user (excluding the current one)
-        #     last_message = None
-        #     for msg in history:
-        #         if msg.author.id == TARGET_USER_ID and msg.id != message.id and '?' in msg.content:
-        #             last_message = msg
-        #             break
-            
-        #     if last_message:
-        #         # Calculate the time difference
-        #         now = datetime.now(timezone.utc)
-        #         time_difference = now - last_message.created_at
-                
-        #         # Send a message with the time difference
-        #         if time_difference.total_seconds() // 3600 > 12:
-        #             await message.channel.send(
-        #                 f"cg, {message.author.mention}! Naposledy ses tady zeptat pred vic jak {time_difference.total_seconds() // 60} minutama :D"
-        #             )
 
+
+# "main"
+
+def set_intents():
+    intents = discord.Intents.default()
+    intents.messages = True
+    intents.reactions = True
+    intents.message_content = True
+    intents.dm_messages = True
+    intents.dm_reactions = True
+    return intents
+
+
+reaction_data.load_data()
+config.load_config(CONFIG_FILE)
+
+command_handlers_list = {'!reboot': reboot, 
+                         '!bomb': call_phanbomb,
+                         '!give': admin_gib_points,
+                         '!update': update_bot,
+                         '!ping': ping_bot,
+                         '!kill': kill_bot,
+                         '!phantop': print_leaderboard,
+                         '!top': print_leaderboard,
+                         '!points': print_points,
+                         '!shop': shop}
 
 while True:
-    try:
-        client.run(TOKEN)
-        sleep(10)
-    except:
-        continue
+    client.run(config.discord_token)
+    sleep(10)
