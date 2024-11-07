@@ -428,5 +428,8 @@ async def on_message(message):
 
 
 while True:
-    client.run(TOKEN)
-    sleep(10)
+    try:
+      client.run(TOKEN)
+      sleep(10)
+    except:
+      continue
