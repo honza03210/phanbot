@@ -299,7 +299,7 @@ async def phanwords_handler(message, content):
             await phanbomb(f"PhanTom napsal {keyword} a stesti nebylo na jeho strane")
 
 async def print_points(params: dict):
-    await params["message"].channel.send(f"{params["message"].author.display_name}, mas {reaction_data.get_val(params["message"].author.id, "points")} phanpointu")
+    await params["message"].channel.send(f'{params["message"].author.display_name}, mas {reaction_data.get_val(params["message"].author.id, "points")} phanpointu')
 
 
 async def shop(params: dict):
@@ -315,7 +315,7 @@ async def shop(params: dict):
         await params["message"].channel.send(f"koupil sis {params["args"][2]}")
         admin = await client.fetch_user(config.admin_id)
         if admin is not None:
-            await admin.send(f"{params["message"].author.id}, {params["message"].author.display_name}, just bought {params["args"][2]}")
+            await admin.send(f'{params["message"].author.id}, {params["message"].author.display_name}, just bought {params["args"][2]}')
     else:
         await params["message"].channel.send('pouzij "!shop list" pro vypis nabidky, nebo "!shop buy NAZEV_POLOZKY" pro nakup v obchode')
 
