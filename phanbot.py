@@ -115,10 +115,6 @@ async def on_raw_reaction_add(reaction):
         return
     last_payload = reaction
 
-    # Ignore reactions from the target user (Phantom)
-    if reaction.user_id == config.target_user_id:
-        return
-
 
     msg = await client.get_channel(reaction.channel_id).fetch_message(reaction.message_id)
     reaction_author = await client.fetch_user(reaction.user_id)
