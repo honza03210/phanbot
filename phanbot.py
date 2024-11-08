@@ -357,15 +357,6 @@ async def on_message(message):
 
 # "main"
 
-def set_intents():
-    intents = discord.Intents.default()
-    intents.messages = True
-    intents.reactions = True
-    intents.message_content = True
-    intents.dm_messages = True
-    intents.dm_reactions = True
-    return intents
-
 config.load_config(CONFIG_FILE)
 reaction_data.load_data()
 
