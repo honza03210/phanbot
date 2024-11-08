@@ -34,12 +34,7 @@ class Config():
             
         except OSError:
             return False
-
-
-# for oritentation in reaction_data.data: dict[user_id: list[REACTIONS, PHANPOINTS, PHANBOMB]]
-REACTIONS = 0
-PHANPOINTS = 1
-PHANBOMB = 2
+        
 
 class ReactionData():
     def __init__(self, filename):
@@ -60,7 +55,7 @@ class ReactionData():
     async def save_data(self) -> bool:
         try:
             with open(self.source_file, 'w+') as file:
-                dump(self.data, file)
+                dump(self.data, file, indent=4)
             return True
 
         except OSError:

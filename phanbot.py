@@ -15,6 +15,7 @@ from tabulate import tabulate
 from random import randint
 
 
+
 SHOP_OFFERS: dict[str: int] =  {'phannerd': 32,
                                 'phanmoon': 20,
                                 'phanspinner': 45,
@@ -27,38 +28,41 @@ config = Config()
 REACTIONS_FILE = 'reactions.json'
 reaction_data = ReactionData(REACTIONS_FILE)
 
+
 # constants for custom error handling
-DATA_RECOVERY = -1
+UNKNOWN = -1
 DATA_SAVING = -2
 REACTION_READ = -3
 PHANBOMB_USER_FETCH = -4
+DATA_RECOVERY = -5
+
+
+ERRORS = {DATA_RECOVERY: "Data recovery failed",
+          DATA_SAVING: "Data saving failed",
+          REACTION_READ: "Reaction reading failed",
+          PHANBOMB_USER_FETCH: "Fetching user for PhanBomb failed",
+          UNKNOWN: "Spadlo to, asi vítr ne?"}
 
 
 ##################################################################################################
 #                                   Bot setup and error handler                                  #
 ##################################################################################################
 
-async def error_handler(error_code: int) -> None:
+
+
+async def error_handler(error_code: int = UNKNOWN, custom_message: str | None = None) -> None:
     global config
     try:
         admin = await client.fetch_user(config.admin_id)
-    
     # todo - log fails into some file
     except discord.HTTPException:
         return
     except discord.NotFound:
         return
+    
+    await admin.send(ERRORS[error_code])
 
-    if error_code == DATA_RECOVERY:
-        await admin.send("Data recovery failed")
-    elif error_code == DATA_SAVING:
-        await admin.send("Data saving failed")
-    elif error_code == REACTION_READ:
-        await admin.send("Reaction reading failed")
-    elif error_code == PHANBOMB_USER_FETCH:
-        await admin.send("Fetching user for PhanBomb failed")
-    await admin.send("Spadlo to, asi vítr ne?")
-
+    
 
 def set_intents():
     intents = discord.Intents.default()
@@ -218,7 +222,9 @@ async def phanbomb(trigger: str, params = {}):
 
     for index, (points, user_id) in enumerate(points_per_user):
 
-        reaction_data.set_val(user_id, "points", reaction_data.get_val(user_id, "points") + max(0, len(points_per_user) - 2 * index))
+        points_won = max(0, len(points_per_user) - 2 * index)
+
+        reaction_data.set_val(user_id, "points", reaction_data.get_val(user_id, "points") + points_won)
         reaction_data.set_val(user_id, "since_bomb", 0)
 
         try:
