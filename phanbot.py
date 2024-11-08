@@ -125,7 +125,7 @@ async def on_raw_reaction_add(reaction):
     if msg.author.id != config.target_user_id:
         return
 
-    count = reaction_count
+    count = reaction_count(msg, reaction_author)
     if count > 3:
         if count == 4:
             await reaction_author.send("Do skóre se ti započítávají pouze první tři reakce na jednu zprávu") 
@@ -238,7 +238,7 @@ async def reboot(params: dict):
         return
     await params["message"].channel.send("Rebooting :)")
     os.system("sudo /sbin/reboot")
-    
+
     # this might run, idk
     await client.close()
     exit(0)
