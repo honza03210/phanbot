@@ -105,6 +105,7 @@ last_payload = None
 
 @client.event
 async def on_raw_reaction_add(reaction):
+    print("triggered")
     global reaction_data, last_payload
 
     # Ignore reactions from bot and duplicates
@@ -126,6 +127,7 @@ async def on_raw_reaction_add(reaction):
         return
 
     count = reaction_count(msg, reaction_author)
+    print(count)
     if count > 3:
         if count == 4:
             await reaction_author.send("Do skóre se ti započítávají pouze první tři reakce na jednu zprávu") 
