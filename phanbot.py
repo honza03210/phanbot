@@ -312,7 +312,7 @@ async def shop(params: dict):
         if reaction_data.get_val(params["message"].author.id, "points") < SHOP_OFFERS[params["args"][2]]:
             return
         reaction_data.set_val(params["message"].author.id, "points", reaction_data.get_val(params["message"].author.id, "points") - SHOP_OFFERS[params["args"][2]])
-        await params["message"].channel.send(f"koupil sis {params["args"][2]}")
+        await params["message"].channel.send(f"koupil sis {params['args'][2]}")
         admin = await client.fetch_user(config.admin_id)
         if admin is not None:
             await admin.send(f'{params["message"].author.id}, {params["message"].author.display_name}, just bought {params["args"][2]}')
