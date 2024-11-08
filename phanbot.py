@@ -279,6 +279,7 @@ async def admin_gib_points(params: dict):
         except IndexError:
             error_handler()
             return
+    await params["message"].channel.send(f"Invalid arguments: {params['args']}")
     
 
 async def update_bot(params: dict):
