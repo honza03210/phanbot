@@ -71,6 +71,8 @@ class ReactionData():
         total, points, since_bomb
         '''
         if user_id in self.data:
+            return self.data
+            return (self.data.get(str(user_id)))
             return (self.data.get(str(user_id))).get(key, None)
         return None
     
