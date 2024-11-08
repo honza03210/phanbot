@@ -27,11 +27,6 @@ config = Config()
 REACTIONS_FILE = 'reactions.json'
 reaction_data = ReactionData(REACTIONS_FILE)
 
-# for oritentation in reaction_data.data: dict[user_id: list[REACTIONS, PHANPOINTS, PHANBOMB]]
-REACTIONS = 0
-PHANPOINTS = 1
-PHANBOMB = 2
-
 # constants for custom error handling
 DATA_RECOVERY = -1
 DATA_SAVING = -2
@@ -227,14 +222,14 @@ async def phanbomb(trigger: str):
         reaction_data.set_val(user_id, "points", reaction_data.get_val(user_id, "points") - max(0, len(points_per_user) - 2 * index))
         reaction_data.set_val(user_id, "since_bomb", 0)
 
-        try:
-            user = await client.fetch_user(user_id)
-            await user.send(f"PhanBomba vybuchlaaa, protoze {trigger}. Umistil/a ses na {index + 1}. miste z {len(points_per_user)}, od posledni PhanBomby jsi dal/a PhanTomovi {points} reakci.\n Dostavas tedy +{max(0, len(points_per_user) - 2 * index)} PhanPointu (ted mas {reaction_data.get_val(user_id, 'points')})\nTakto ted vypada PhanBoard:")
-            await print_leaderboard(user)
+        # try:
+        #     user = await client.fetch_user(user_id)
+        #     await user.send(f"PhanBomba vybuchlaaa, protoze {trigger}. Umistil/a ses na {index + 1}. miste z {len(points_per_user)}, od posledni PhanBomby jsi dal/a PhanTomovi {points} reakci.\n Dostavas tedy +{max(0, len(points_per_user) - 2 * index)} PhanPointu (ted mas {reaction_data.get_val(user_id, 'points')})\nTakto ted vypada PhanBoard:")
+        #     await print_leaderboard(user)
 
-        except discord.errors.NotFound:
-            error_handler(PHANBOMB_USER_FETCH)
-            continue
+        # except discord.errors.NotFound:
+        #     error_handler(PHANBOMB_USER_FETCH)
+        #     continue
 
     await reaction_data.save_data()
 
@@ -306,7 +301,7 @@ async def shop(params: dict):
     if len(params["args"]) == 2 and params["args"][1] == 'list':
             msg = 'Nabidka v obchode:\n'
             for offer, price in SHOP_OFFERS.items():
-                msg += f"{offer} za {price} PhanPoints"
+                msg += f"{offer} za {price} PhanPoints\n"
             await params["message"].channel.send(msg)
     elif len(params["args"]) == 3 and params["args"][1] == 'buy' and params["args"][2] in SHOP_OFFERS.keys():
         if reaction_data.get_val(params["message"].author.id, "points") < SHOP_OFFERS[params["args"][2]]:
