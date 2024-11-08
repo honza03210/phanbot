@@ -257,7 +257,7 @@ async def call_phanbomb(params: dict):
 async def admin_gib_points(params: dict):
     if not params["is_admin"]:
         return
-    if len(params) == 2:
+    if len(params["args"]) == 2:
         try:
             reaction_data.set_val(config.admin_id, "points", int(params['args'][1]))
             await params["message"].channel.send(f"points for admin set to {params['args'][1]}")
@@ -268,7 +268,7 @@ async def admin_gib_points(params: dict):
         except IndexError:
             error_handler()
             return
-    elif len(params) == 3:
+    elif len(params["args"]) == 3:
         try:
             reaction_data.set_val(params['args'][1], "points", int(params['args'][2]))
             await params["message"].channel.send(f"points for user_id: {params['args'][1]} set to {params['args'][2]}")
