@@ -71,23 +71,22 @@ class ReactionData():
         total, points, since_bomb
         '''
         if user_id in self.data:
-            return self.data.get(user_id)
-            return (self.data.get(user_id)).get(key, None)
+            return (self.data.get(str(user_id))).get(key, None)
         return None
     
 
     def set_val(self, user_id: int, key: str, new_val: int) -> bool:
         '''total, points, since_bomb'''
         if user_id in self.data:
-            if key in self.data[user_id]:
-                self.data[user_id][key] = new_val
+            if key in self.data[str(user_id)]:
+                self.data[str(user_id)][key] = new_val
                 return True
         return False
 
 
     def change_reaction_count(self, user_id: int, delta: int):
         if user_id not in self.data:
-            self.data[user_id] = [0, 0, 0]
-        self.data[user_id]["total"] += delta
-        self.data[user_id]["since_bomb"] += delta
+            self.data[str(user_id)] = [0, 0, 0]
+        self.data[str(user_id)]["total"] += delta
+        self.data[str(user_id)]["since_bomb"] += delta
 
