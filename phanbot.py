@@ -366,10 +366,9 @@ def set_intents():
     intents.dm_reactions = True
     return intents
 
-
+config.load_config(CONFIG_FILE)
 reaction_data.load_data()
 
-config.load_config(CONFIG_FILE)
 
 print(reaction_data.data)
 print(config.admin_id)
