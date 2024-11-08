@@ -10,6 +10,8 @@ import discord
 from time import sleep
 from discord.ext import commands
 import os
+import subprocess
+import sys
 import io
 from tabulate import tabulate
 from random import randint
@@ -286,8 +288,13 @@ async def admin_gib_points(params: dict):
 async def update_bot(params: dict):
     if not params["is_admin"]:
         return
-    os.system("git pull main --no-edit")
-    os.system("python3 phanbot.py &")
+    p = subprocess.Popen(['git', 'pull', '--no-edit'])
+    p.wait()
+    await params["message"].channel.send(f"pulled")
+    subprocess.Popen(['python3', 'phanbot.py'])
+    await params["message"].channel.send(f"started new process")
+    await reaction_data.save_data()
+    await client.close()
     exit(0)
 
 
@@ -302,6 +309,14 @@ async def kill_bot(params: dict):
     await reaction_data.save_data()
     await client.close()
     exit(0)
+
+async def git_pull(params: dict):
+    if not params["is_admin"]:
+        return
+    os.system("git pull --no-edit")
+
+    await params["message"].channel.send("pulled")
+
 
 async def phanwords_handler(message, content):
     key_words = {'?': (1, "Sice ti neporadim, aaale tady mas macicku :)"),
@@ -386,6 +401,7 @@ command_handlers_list = {'!reboot': reboot,
                          '!bomb': call_phanbomb,
                          '!give': admin_gib_points,
                          '!update': update_bot,
+                         '!pull': git_pull,
                          '!ping': ping_bot,
                          '!kill': kill_bot,
                          '!phantop': print_leaderboard,
