@@ -16,10 +16,10 @@ from random import randint
 
 
 
-SHOP_OFFERS: dict[str: int] =  {'phannerd': 32,
-                                'phanmoon': 20,
-                                'phanspinner': 45,
-                                'susenka nebo ekvivalent': 12}
+SHOP_OFFERS: dict[str: int] =  {'phannerd': 50,
+                                'phanmoon': 40,
+                                'phanspinner': 75,
+                                'susenka nebo ekvivalent': 30}
 
 
 CONFIG_FILE = 'config.json'
@@ -279,7 +279,8 @@ async def admin_gib_points(params: dict):
         except IndexError:
             error_handler()
             return
-    await params["message"].channel.send(f"Invalid arguments: {params['args']}")
+    else:
+        await params["message"].channel.send(f"Invalid arguments: {params['args']}")
     
 
 async def update_bot(params: dict):
