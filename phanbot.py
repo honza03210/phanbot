@@ -62,7 +62,7 @@ async def error_handler(error_code: int = UNKNOWN, custom_message: str | None = 
     
     await admin.send(ERRORS[error_code])
 
-    
+
 
 def set_intents():
     intents = discord.Intents.default()
@@ -212,8 +212,7 @@ async def print_leaderboard(params: dict):
 
 
 
-async def phanbomb(trigger: str, params = {}):
-
+async def phanbomb(trigger: str, params = {"is_admin": True}):
     points_per_user = []
 
     for user_id, data in reaction_data.data.items():
@@ -258,14 +257,28 @@ async def call_phanbomb(params: dict):
 async def admin_gib_points(params: dict):
     if not params["is_admin"]:
         return
-    try:
-        reaction_data.set_val(config.admin_id, "points", int(params['args'][1]))
-    except TypeError:
-        error_handler()
-        return
-    except IndexError:
-        error_handler()
-        return
+    if len(params) == 2:
+        try:
+            reaction_data.set_val(config.admin_id, "points", int(params['args'][1]))
+            await params["message"].channel.send(f"points for admin set to {params['args'][1]}")
+
+        except TypeError:
+            error_handler()
+            return
+        except IndexError:
+            error_handler()
+            return
+    elif len(params) == 3:
+        try:
+            reaction_data.set_val(params['args'][1], "points", int(params['args'][2]))
+            await params["message"].channel.send(f"points for user_id: {params['args'][1]} set to {params['args'][2]}")
+
+        except TypeError:
+            error_handler()
+            return
+        except IndexError:
+            error_handler()
+            return
     
 
 async def update_bot(params: dict):
@@ -280,6 +293,10 @@ async def ping_bot(params: dict):
     await params["message"].channel.send("bot says hi! :D")
 
 async def kill_bot(params: dict):
+    if not params["is_admin"]:
+        return
+    await params["message"].channel.send("PhanBot, 4ever in your heart")
+
     await reaction_data.save_data()
     await client.close()
     exit(0)
