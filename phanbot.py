@@ -373,7 +373,7 @@ config.load_config(CONFIG_FILE)
 
 print(reaction_data.data)
 print(config.admin_id)
-print(reaction_data.data[str(config.admin_id)])
+print(reaction_data.data[str(config.admin_id)]["points"])
 
 
 command_handlers_list = {'!reboot': reboot, 
