@@ -344,7 +344,7 @@ async def on_message(message):
         params = {"is_admin": message.author.id == config.admin_id,
                 "message": message,
                 "user_id": message.author.id,
-                "args": parsed[1:] if len(parsed) > 1 else []}
+                "args": parsed}
         await command_handlers_list[first_word](params)
 
 
