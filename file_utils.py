@@ -70,7 +70,7 @@ class ReactionData():
         '''
         total, points, since_bomb
         '''
-        if user_id in self.data:
+        if str(user_id) in self.data:
             print(self.data)
             return self.data
             return (self.data.get(str(user_id)))
@@ -80,7 +80,7 @@ class ReactionData():
 
     def set_val(self, user_id: int, key: str, new_val: int) -> bool:
         '''total, points, since_bomb'''
-        if user_id in self.data:
+        if str(user_id) in self.data:
             if key in self.data[str(user_id)]:
                 self.data[str(user_id)][key] = new_val
                 return True
