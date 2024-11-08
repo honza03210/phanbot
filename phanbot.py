@@ -222,13 +222,13 @@ async def phanbomb(trigger: str, params = {}):
         reaction_data.set_val(user_id, "points", reaction_data.get_val(user_id, "points") - max(0, len(points_per_user) - 2 * index))
         reaction_data.set_val(user_id, "since_bomb", 0)
 
-        # try:
-        #     user = await client.fetch_user(user_id)
-        #     await user.send(f"PhanBomba vybuchlaaa, protoze {trigger}. Umistil/a ses na {index + 1}. miste z {len(points_per_user)}, od posledni PhanBomby jsi dal/a PhanTomovi {points} reakci.\n Dostavas tedy +{max(0, len(points_per_user) - 2 * index)} PhanPointu (ted mas {reaction_data.get_val(user_id, 'points')})")
+        try:
+            user = await client.fetch_user(user_id)
+            await user.send(f"PhanBomba vybuchlaaa, protoze {trigger}. Umistil/a ses na {index + 1}. miste z {len(points_per_user)}, od posledni PhanBomby jsi dal/a PhanTomovi {points} reakci.\n Dostavas tedy +{max(0, len(points_per_user) - 2 * index)} PhanPointu (ted mas {reaction_data.get_val(user_id, 'points')})")
 
-        # except discord.errors.NotFound:
-        #     error_handler(PHANBOMB_USER_FETCH)
-        #     continue
+        except discord.errors.NotFound:
+            error_handler(PHANBOMB_USER_FETCH)
+            continue
 
     await reaction_data.save_data()
 
