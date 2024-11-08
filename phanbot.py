@@ -139,7 +139,7 @@ async def on_raw_reaction_add(reaction):
     # updating data in reactions_data
     reaction_data.change_reaction_count(reaction.user_id, 1)
 
-    if reaction_data.data[reaction.user_id][REACTIONS] % 10 == 0:
+    if reaction_data.get_val(reaction.user_id, 'total') % 10 == 0:
         await image_utils.send_cat(reaction_author.dm_channel) # can fail, dont care
 
     await reaction_data.save_data() # can fail, might be a problem
@@ -187,7 +187,7 @@ async def on_raw_reaction_remove(reaction):
 async def print_leaderboard(params: dict):
     tuples = []
     for user_id in reaction_data.data:
-        tuples.append((reaction_data.data[user_id][REACTIONS], user_id, reaction_data.data[user_id][PHANBOMB]))
+        tuples.append((reaction_data.get_val(user_id, 'total'), user_id, reaction_data.get_val(user_id, 'since_bomb')))
 
     tuples.sort(reverse=True)
 
@@ -219,17 +219,17 @@ async def phanbomb(trigger: str):
     points_per_user = []
 
     for user_id, data in reaction_data.data.items():
-        points_per_user.append((data[PHANBOMB], user_id))
+        points_per_user.append((data["since_bomb"], user_id))
     points_per_user.sort(reverse=True)
 
     for index, (points, user_id) in enumerate(points_per_user):
 
-        reaction_data.data[user_id][PHANPOINTS] += len(points_per_user) - index
-        reaction_data.data[user_id][PHANBOMB] = 0
+        reaction_data.set_val(user_id, "points", reaction_data.get_val(user_id, "points") - max(0, len(points_per_user) - 2 * index))
+        reaction_data.set_val(user_id, "since_bomb") = 0
 
         try:
             user = await client.fetch_user(user_id)
-            await user.send(f"PhanBomba vybuchlaaa, protoze {trigger}. Umistil/a ses na {index + 1}. miste z {len(points_per_user)}, od posledni PhanBomby jsi dal/a PhanTomovi {points} reakci.\n Dostavas tedy +{len(points_per_user) - index} PhanPointu (ted mas {reaction_data.data[user_id][PHANPOINTS]})\nTakto ted vypada PhanBoard:")
+            await user.send(f"PhanBomba vybuchlaaa, protoze {trigger}. Umistil/a ses na {index + 1}. miste z {len(points_per_user)}, od posledni PhanBomby jsi dal/a PhanTomovi {points} reakci.\n Dostavas tedy +{max(0, len(points_per_user) - 2 * index)} PhanPointu (ted mas {reaction_data.get_val(user_id, "points")})\nTakto ted vypada PhanBoard:")
             await print_leaderboard(user)
 
         except discord.errors.NotFound:
@@ -258,7 +258,7 @@ async def admin_gib_points(params: dict):
     if not params["is_admin"]:
         return
     try:
-        reaction_data[config.admin_id][PHANPOINTS] += int(params['args'][1])
+        reaction_data.set_val(config.admin_id, "points", int(params['args'][1]))
     except TypeError:
         error_handler()
         return
@@ -299,7 +299,7 @@ async def phanwords_handler(message, content):
             await phanbomb(f"PhanTom napsal {keyword} a stesti nebylo na jeho strane")
 
 async def print_points(params: dict):
-    await params["message"].channel.send(f"{params["message"].author.display_name}, mas {reaction_data.data[params["message"].author.id][PHANPOINTS]} phanpointu")
+    await params["message"].channel.send(f"{params["message"].author.display_name}, mas {reaction_data.get_val(params["message"].author.id, "points")} phanpointu")
 
 
 async def shop(params: dict):
@@ -309,9 +309,10 @@ async def shop(params: dict):
                 msg += f"{offer} za {price} PhanPoints"
             await params["message"].channel.send(msg)
     elif len(params["args"]) == 3 and params["args"][1] == 'buy' and params["args"][2] in SHOP_OFFERS.keys():
-        if reaction_data.data[params["message"].author.id][PHANPOINTS] < SHOP_OFFERS[params["args"][2]]:
+        if reaction_data.get_val(params["message"].author.id, "points") < SHOP_OFFERS[params["args"][2]]:
             return
-        reaction_data.data[params["message"].author.id][PHANPOINTS] -= SHOP_OFFERS[params["args"][2]]
+        reaction_data.set_val(params["message"].author.id, "points", reaction_data.get_val(params["message"].author.id, "points") - SHOP_OFFERS[params["args"][2]])
+        await params["message"].channel.send(f"koupil sis {params["args"][2]}")
         admin = await client.fetch_user(config.admin_id)
         if admin is not None:
             await admin.send(f"{params["message"].author.id}, {params["message"].author.display_name}, just bought {params["args"][2]}")
@@ -336,8 +337,6 @@ async def on_message(message):
 
     parsed = content.split() 
     first_word = parsed[0]
-
-   
 
     # commands
     if first_word in command_handlers_list:

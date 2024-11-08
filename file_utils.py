@@ -1,5 +1,5 @@
 
-from json import load
+from json import load, dump
 
 
 class Config():
@@ -43,26 +43,16 @@ PHANBOMB = 2
 
 class ReactionData():
     def __init__(self, filename):
-        self.data: dict[int: list[int, int, int]] = {}
+        # data -> total, points, since_bomb
+        self.data: dict[int: dict[str: int]] = {}
         self.source_file = filename
 
     
     def load_data(self) -> bool:
         try:
             with open(self.source_file, 'r') as file:
-                for row in file.readlines():
-                    elements = row.split("|")
-
-                    user_id = int(elements[0])
-                    reac_num = int(elements[1])
-                    phanpoints = int(elements[2])
-                    phanbomb = int(elements[3])
-
-                    self.data[user_id] = [reac_num, 
-                                          phanpoints, 
-                                          phanbomb]
+                self.data = load(file)
             return True
-
         except OSError:
             return False
 
@@ -70,14 +60,30 @@ class ReactionData():
     async def save_data(self) -> bool:
         try:
             with open(self.source_file, 'w+') as file:
-                for user_id, data in self.data.items():
-                    file.write(f"{user_id}|{data[0]}|{data[1]}|{data[2]}\n")
-
+                dump(self.data, file)
             return True
 
         except OSError:
             return False
     
+    def get_val(self, user_id: int, key: str) -> int | None:
+        '''
+        total, points, since_bomb
+        '''
+        if user_id in self.data:
+            return (self.data.get(user_id)).get(key, None)
+        return None
+    
+
+    def set_val(self, user_id: int, key: str, new_val: int) -> bool:
+        '''total, points, since_bomb'''
+        if user_id in self.data:
+            if key in self.data[user_id]:
+                self.data[user_id][key] = new_val
+                return True
+        return False
+
+
     def change_reaction_count(self, user_id: int, delta: int):
         if user_id not in self.data:
             self.data[user_id] = [0, 0, 0]
