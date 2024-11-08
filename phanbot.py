@@ -299,7 +299,7 @@ async def phanwords_handler(message, content):
             await phanbomb(f"PhanTom napsal {keyword} a stesti nebylo na jeho strane")
 
 async def print_points(params: dict):
-    await params["message"].channel.send(f'{params["message"].author.display_name}, mas {reaction_data.get_val(params["user_id"], "points")} phanpointu')
+    await params["message"].channel.send(f'{params["message"].author.display_name}, mas {reaction_data.get_val(params["user_id"], "points")}:{params["user_id"]} phanpointu')
 
 
 async def shop(params: dict):
