@@ -91,9 +91,9 @@ async def on_ready():
 
 
 # Function return number of rections of user on message
-def reaction_count(msg, user):
+async def reaction_count(msg, user):
     count = 0
-    for reaction in msg.reactions:
+    async for reaction in msg.reactions:
         if user in reaction.users():
             count += 1
     return count
