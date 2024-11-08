@@ -94,8 +94,9 @@ async def on_ready():
 async def reaction_count(msg, user):
     count = 0
     for reaction in msg.reactions:
-        if user in await reaction.users():
-            count += 1
+        async for react_user in reaction.users():
+            if user.id == react_user.id:
+                count += 1
     return count
 
 
@@ -161,7 +162,7 @@ async def on_raw_reaction_remove(reaction):
     if msg_author.id != config.target_user_id:
         return
 
-    if await reaction_count(msg, user) >= 3:
+    if reaction_count(msg, user) >= 3:
         return
 
     # updating data in reactions_data
