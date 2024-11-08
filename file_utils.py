@@ -86,7 +86,9 @@ class ReactionData():
 
     def change_reaction_count(self, user_id: int, delta: int):
         if user_id not in self.data:
-            self.data[str(user_id)] = [0, 0, 0]
+            self.data[str(user_id)] = {"total": 0, 
+                                       "points": 0,
+                                       "since_bomb": 0}
         self.data[str(user_id)]["total"] += delta
         self.data[str(user_id)]["since_bomb"] += delta
 
