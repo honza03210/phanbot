@@ -237,9 +237,11 @@ async def reboot(params: dict):
     if not params["is_admin"]:
         return
     await params["message"].channel.send("Rebooting :)")
+    os.system("sudo /sbin/reboot")
+    
+    # this might run, idk
     await client.close()
     exit(0)
-    os.system("sudo /sbin/reboot")
     
 
 async def call_phanbomb(params: dict):
