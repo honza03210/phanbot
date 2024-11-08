@@ -122,7 +122,7 @@ async def on_raw_reaction_add(reaction):
     if msg.author.id != config.target_user_id:
         return
 
-    count = reaction_count(msg, reaction_author)
+    count = await reaction_count(msg, reaction_author)
     print(count)
     if count > 3:
         if count == 4:
