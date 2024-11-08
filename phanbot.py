@@ -218,7 +218,7 @@ async def phanbomb(trigger: str, params = {}):
 
     for index, (points, user_id) in enumerate(points_per_user):
 
-        reaction_data.set_val(user_id, "points", reaction_data.get_val(user_id, "points") - max(0, len(points_per_user) - 2 * index))
+        reaction_data.set_val(user_id, "points", reaction_data.get_val(user_id, "points") + max(0, len(points_per_user) - 2 * index))
         reaction_data.set_val(user_id, "since_bomb", 0)
 
         try:
