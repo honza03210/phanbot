@@ -341,10 +341,10 @@ async def on_message(message):
     # commands
     if first_word in command_handlers_list:
          # this will be given to every command handler function 
-        params = {"author_id": message.author.id == config.admin_id,
-              "message": message,
-              "user_id": message.author.id,
-              "args": parsed[1:] if len(parsed) > 1 else []}
+        params = {"is_admin": message.author.id == config.admin_id,
+                "message": message,
+                "user_id": message.author.id,
+                "args": parsed[1:] if len(parsed) > 1 else []}
         await command_handlers_list[first_word](params)
 
 
