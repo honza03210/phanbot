@@ -3,7 +3,7 @@
 ############################################
 
 
-import file_utils
+from file_utils import ReactionData, Config
 import image_utils
 
 import discord
@@ -22,10 +22,10 @@ SHOP_OFFERS: dict[str: int] =  {'phannerd': 32,
 
 
 CONFIG_FILE = 'config.json'
-config = file_utils.Config()
+config = Config()
 
 REACTIONS_FILE = 'reactions.json'
-reaction_data = file_utils.ReactionData(REACTIONS_FILE)
+reaction_data = ReactionData(REACTIONS_FILE)
 
 # for oritentation in reaction_data.data: dict[user_id: list[REACTIONS, PHANPOINTS, PHANBOMB]]
 REACTIONS = 0
