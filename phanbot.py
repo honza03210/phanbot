@@ -209,7 +209,7 @@ async def print_leaderboard(params: dict):
 
 
 
-async def phanbomb(trigger: str):
+async def phanbomb(trigger: str, params = {}):
 
     points_per_user = []
 
@@ -224,8 +224,7 @@ async def phanbomb(trigger: str):
 
         # try:
         #     user = await client.fetch_user(user_id)
-        #     await user.send(f"PhanBomba vybuchlaaa, protoze {trigger}. Umistil/a ses na {index + 1}. miste z {len(points_per_user)}, od posledni PhanBomby jsi dal/a PhanTomovi {points} reakci.\n Dostavas tedy +{max(0, len(points_per_user) - 2 * index)} PhanPointu (ted mas {reaction_data.get_val(user_id, 'points')})\nTakto ted vypada PhanBoard:")
-        #     await print_leaderboard(user)
+        #     await user.send(f"PhanBomba vybuchlaaa, protoze {trigger}. Umistil/a ses na {index + 1}. miste z {len(points_per_user)}, od posledni PhanBomby jsi dal/a PhanTomovi {points} reakci.\n Dostavas tedy +{max(0, len(points_per_user) - 2 * index)} PhanPointu (ted mas {reaction_data.get_val(user_id, 'points')})")
 
         # except discord.errors.NotFound:
         #     error_handler(PHANBOMB_USER_FETCH)
