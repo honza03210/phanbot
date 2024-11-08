@@ -368,6 +368,7 @@ def set_intents():
 
 
 reaction_data.load_data()
+print(reaction_data.data)
 config.load_config(CONFIG_FILE)
 
 command_handlers_list = {'!reboot': reboot, 
