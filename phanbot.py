@@ -172,7 +172,7 @@ async def on_raw_reaction_remove(reaction):
         return
 
     # updating data in reactions_data
-    reaction_data.change_reaction_count(reaction.user_id, 1)
+    reaction_data.change_reaction_count(reaction.user_id, -1)
 
     await reaction_data.save_data()
 
