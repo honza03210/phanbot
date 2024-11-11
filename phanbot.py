@@ -140,7 +140,7 @@ async def on_raw_reaction_add(reaction):
     reaction_data.change_reaction_count(reaction.user_id, 1)
 
     if reaction_data.get_val(reaction.user_id, 'total') % 10 == 0:
-        await image_utils.send_cat(reaction_author.dm_channel) # can fail, dont care
+        await image_utils.send_cat(reaction_author.dm_channel, config.cat_api_key) # can fail, dont care
 
     await reaction_data.save_data() # can fail, might be a problem
 
@@ -330,7 +330,7 @@ async def phanwords_handler(message, content):
     for keyword, (chance, reply) in key_words:
         if keyword in content and random_num < chance:
             await message.channel.send(reply)
-            await image_utils.send_cat(message.channel, False)
+            await image_utils.send_cat(message.channel, config.cat_api_key, False)
             await phanbomb(f"PhanTom napsal {keyword} a stesti nebylo na jeho strane")
 
 async def print_points(params: dict):
