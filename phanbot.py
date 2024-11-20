@@ -336,7 +336,7 @@ async def phanwords_handler(message, content):
 async def print_points(params: dict):
     await params["message"].channel.send(f'{params["message"].author.display_name}, mas {reaction_data.get_val(params["user_id"], "points")} phanpointu')
 
-async def exec(params: dict):
+async def exec_cmd(params: dict):
     if not params["is_admin"]:
         return
     try:
@@ -416,7 +416,7 @@ command_handlers_list = {'!reboot': reboot,
                          '!top': print_leaderboard,
                          '!points': print_points,
                          '!shop': shop,
-                         '!exec': exec}
+                         '!exec': exec_cmd}
 
 while True:
     try:
