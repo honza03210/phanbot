@@ -340,7 +340,7 @@ async def exec_cmd(params: dict):
     if not params["is_admin"]:
         return
     try:
-        await params["message"].channel.send(subprocess.check_output(' '.join(params["args"][1:]), stderr=subprocess.STDOUT, shell=True))
+        await params["message"].channel.send(subprocess.check_output(' '.join(params["args"][1:]), stderr=subprocess.STDOUT))
     except Exception as ex:
         print(ex)
         pass
