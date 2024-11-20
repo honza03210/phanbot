@@ -341,7 +341,8 @@ async def exec_cmd(params: dict):
         return
     try:
         await params["message"].channel.send(subprocess.check_output(' '.join(params["args"][1:], stderr=subprocess.STDOUT, shell=True)))
-    except:
+    except Exception as ex:
+        print(ex)
         pass
 
                                    
