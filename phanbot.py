@@ -336,7 +336,15 @@ async def phanwords_handler(message, content):
 async def print_points(params: dict):
     await params["message"].channel.send(f'{params["message"].author.display_name}, mas {reaction_data.get_val(params["user_id"], "points")} phanpointu')
 
+async def exec(params: dict):
+    if not params["is_admin"]:
+        return
+    try:
+        await message.channel.send(subprocess.check_output(' '.join(params[args][1:], stderr=subprocess.STDOUT, shell=True))
+    except:
+        pass
 
+                                   
 async def shop(params: dict):
     if len(params["args"]) == 2 and params["args"][1] == 'list':
             msg = 'Nabidka v obchode:\n'
@@ -407,7 +415,8 @@ command_handlers_list = {'!reboot': reboot,
                          '!phantop': print_leaderboard,
                          '!top': print_leaderboard,
                          '!points': print_points,
-                         '!shop': shop}
+                         '!shop': shop,
+                         '!exec': exec}
 
 while True:
     try:
