@@ -32,5 +32,7 @@ async def on_ready():
         voice_client.stop()
 
 while True:
-	bot.run(config['whip-token'])  # Replace with your Discord bot token
-	sleep(30)
+    try:
+        bot.run(config['whip-token'])  # Replace with your Discord bot token
+    except:
+        sleep(30)
