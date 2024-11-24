@@ -1,17 +1,19 @@
 import discord
-from mcstatus import MinecraftServer
+from discord.ext import commands
+from dotenv import load_dotenv
+from mcstatus import JavaServer
 import os
 from time import sleep
 
+load_dotenv()
 MC_IP = os.getenv("MC_SERVER")
 
-client = discord.Client()
 TOKEN = os.getenv("mcbot_token")
 
 CHANNEL_ID = int(os.getenv("CHANNEL_ID"))
 ADMIN = int(os.getenv("ADMIN_ID"))
 MINECRAFT_ROLE = int(os.getenv("MINECRAFT_ROLE"))
-ONLINE = False
+ONLINE = True
 
 # Set up the bot
 intents = discord.Intents.default()
@@ -19,8 +21,10 @@ intents.messages = True
 intents.reactions = True
 intents.message_content = True
 
+client = commands.Bot(command_prefix = "/", intents = intents)
+
 def ServerIsOnline():
-    server = MinecraftServer.lookup(MC_IP)
+    server = JavaServer.lookup(MC_IP)
     if server.status():
         return True
     return False
@@ -29,10 +33,15 @@ def ServerIsOnline():
 @client.event
 async def on_ready():
     print("Bot is ready")
-    user = client.get_user(ADMIN)
-    await user.send("Bot is ready")
-    await check_server()
-
+    try:
+        user = client.get_user(ADMIN)
+        await user.send("Bot is ready")
+    except:
+        pass
+    try:
+        await check_server()
+    except:
+        pass
 
 async def check_server():
     global ONLINE
