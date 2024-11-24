@@ -53,7 +53,7 @@ async def check_server():
         await asyncio.sleep(5)
         print("slept")
         status = ServerIsOnline()
-        if status and status.players > 0:
+        if status and status.players.online > 0:
             if not ONLINE:
                 ONLINE = True
                 channel = client.get_channel(CHANNEL_ID)
