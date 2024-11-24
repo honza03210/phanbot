@@ -26,7 +26,9 @@ client = commands.Bot(command_prefix = "/", intents = intents)
 
 def ServerIsOnline():
     server = JavaServer.lookup(MC_IP)
+
     try:
+        print(server.status())
         status = server.status()
         return status
     except:
@@ -53,7 +55,7 @@ async def check_server():
         await asyncio.sleep(5)
         print("slept")
         status = ServerIsOnline()
-        if status:
+        if status is not None and status.latency != 0:
             if not ONLINE:
                 ONLINE = True
                 channel = client.get_channel(CHANNEL_ID)
