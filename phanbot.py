@@ -140,6 +140,7 @@ async def on_raw_reaction_add(reaction):
     reaction_data.change_reaction_count(reaction.user_id, 1)
 
     if reaction_data.get_val(reaction.user_id, 'total') % 10 == 0:
+        await reaction_author.send(f"Cgggg, {reaction_data.get_val(reaction.user_id, 'total')} reakci si zaslouzi odmenu :)")
         await image_utils.send_cat(reaction_author.dm_channel, config.cat_api_key) # can fail, dont care
 
     await reaction_data.save_data() # can fail, might be a problem
