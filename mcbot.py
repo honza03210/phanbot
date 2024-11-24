@@ -1,11 +1,8 @@
 import discord
 from mcstatus import MinecraftServer
 import os
-from dotenv import load_dotenv
 from time import sleep
 
-
-load_dotenv()
 MC_IP = os.getenv("MC_SERVER")
 
 client = discord.Client()
