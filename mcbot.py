@@ -33,7 +33,7 @@ def ServerIsOnline():
         return status
     except:
         print("offline")
-        return False
+        return None
 
 
 
