@@ -26,15 +26,9 @@ client = commands.Bot(command_prefix = "/", intents = intents)
 
 def ServerIsOnline():
     server = JavaServer.lookup(MC_IP)
-
-    try:
-        print(server.status())
-        status = server.status()
-        return status
-    except:
-        print("offline")
-        return None
-
+    if server.status():
+        return True
+    return False
 
 
 @client.event
@@ -55,16 +49,16 @@ async def check_server():
         await asyncio.sleep(5)
         print("slept")
         status = ServerIsOnline()
-        if status is not None and status.latency != 0:
+        if ServerIsOnline():
             if not ONLINE:
                 ONLINE = True
                 channel = client.get_channel(CHANNEL_ID)
                 role = channel.guild.get_role(MINECRAFT_ROLE)
                 await channel.send(f"{role.mention} Server je online!\n" + 
-                                   "Gotta catch 'em all :white_check_mark:\n" + f"{status.players.online} hracu je online")
-            if player_count < status.players.online:
-                player_count = status.players.online
-                await channel.send(f"{status.players.online} hracu online")
+                                   "Gotta catch 'em all :white_check_mark:\n" + f"hahhahah hracu je online")
+            # if player_count < status.players.online:
+            #     player_count = status.players.online
+            #     await channel.send(f"{status.players.online} hracu online")
         else:
             if ONLINE:
                 ONLINE = False
