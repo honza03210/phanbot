@@ -298,7 +298,6 @@ async def update_bot(params: dict):
     await client.close()
     exit(0)
 
-
 async def ping_bot(params: dict):
     await params["message"].channel.send("bot says hi! :D")
 
@@ -369,6 +368,7 @@ async def shop(params: dict):
 #    Frankensteins monster of a bot, it's alive, it's not pretty, but it's alive, I think...     #
 ##################################################################################################
 
+       
 
 @client.event
 async def on_message(message):
@@ -382,6 +382,44 @@ async def on_message(message):
 
     parsed = content.split() 
     first_word = parsed[0]
+    
+    
+    # if message.author.id == TARGET_USER_ID:
+    #     await message.channel.send("Insufisnt prava bro")
+    if isinstance(message.channel, discord.DMChannel):
+        if message.author.bot and message.channel.id == TRUSTED_CHANNEL:
+            global to_terminate
+            if to_terminate:
+                await message.channel.send("Bot " + str(bot_id) + " terminated")
+                await client.close()
+                exit(0)
+        # if message.author.id == TARGET_USER_ID:
+        #     message.channel.send("Nice try, Tome xd")
+        #     return
+        if message.author.id == TRUSTED_USER:
+            if first_word == "reboot":
+                await message.channel.send("Rebooting :)")
+                exit(0)
+                os.system("sudo /sbin/reboot")
+            elif first_word == "bomb":
+                await phanbomb()
+
+            elif first_word == "recover":
+                await phanbomb_recover()
+            elif first_word == "give":
+                reactions_data[TRUSTED_USER]['phanpoints'] += int(parsed[1])
+            elif first_word == "pull":
+                await message.channel.send("pulling")
+                os.system("git pull main --no-edit")
+            elif first_word == "update":
+                # this is terrible, but it makes sure that at least one bot is still alive -> can reboot the server
+                to_terminate = True
+                os.system("git pull main --no-edit")
+                os.system("python3 phanbot.py " + str(bot_id + 1) + " &")
+            elif first_word == "ping":
+                await message.channel.send("bot " + str(bot_id) + " says hi! :D")
+            elif first_word == "kill":
+
 
     # commands
     if first_word in command_handlers_list:
